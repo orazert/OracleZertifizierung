@@ -1,0 +1,46 @@
+cc1;cc2;bezeichnung
+1;1;Nahrungsmittel
+1;2;Alkoholfreie Getränke
+2;1;Alkoholische Getränke
+2;2;Tabak
+3;1;Bekleidung
+3;2;Schuhe. einschließlich Reparatur
+4;1;Gezahlte Wohnungsmieten
+4;2;Ausgaben für Eigentumswohnungen
+4;3;Instandhaltung und Reparatur der Wohnung
+4;4;Wasserversorgung und sonstige Dienstleistungen im Zusammenhang mit der Wohnung
+4;5;Elektrizität. Gas und andere Brennstoffe
+5;1;Einrichtungsgegenstände und Bodenbeläge
+5;2;Heimtextilien
+5;3;Haushaltsgeräte
+5;4;Glaswaren. Geschirr und andere Gebrauchsgüter für die Haushaltsführung
+5;5;Werkzeuge und Geräte für Haus und Garten
+5;6;Waren und Dienstleistungen für die laufende Haushaltsführung
+6;1;Medizinische Erzeugnisse
+6;2;Ambulante Dienstleistungen
+6;3;Krankenhausdienstleistungen
+7;1;Kauf von Fahrzeugen
+7;2;Betrieb von privaten Verkehrsmitteln
+7;3;Verkehrsdienstleistungen
+8;1;Postdienste
+8;2;Telefonapparate und Telefaxgeräte
+8;3;Telefon- und Telefaxdienste
+9;1;Geräte für Audiovision. Fotografie und Datenverarbeitung
+9;2;Sonstige wesentliche Gebrauchsgüter für Freizeit und Kultur
+9;3;Sonstige Freizeitartikel und -geräte. Gartenartikel und Heimtiere
+9;4;Freizeit- und Kulturdienstleistungen
+9;5;Zeitungen. Bücher und Schreibwaren
+9;6;Pauschalreisen
+10;1;Kindergarten. Volksschule. Internat
+10;2;Hauptschule. Schulausflüge
+10;3;AHS. Halbinternat
+10;4;Studiengebühren
+10;5;Kurse
+11;1;Bewirtungsdienstleistungen
+11;2;Beherbergungsdienstleistungen
+12;1;Körperpflege
+12;3;Persönliche Gebrauchsgüter. a.n.g.
+12;4;Sozialschutz
+12;5;Versicherungen
+12;6;Finanzdienstleistungen. a.n.g.
+12;7;Sonstige Dienstleistungen. a.n.g.
