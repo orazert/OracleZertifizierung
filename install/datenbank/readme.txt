@@ -1,4 +1,4 @@
-1. groesse Frage
+1. grosse Frage
 wk_cc1.id + wk_cc1.user_id bestimmen einen eindeutigen Eintrag
 Ich glaube, wir koennen nicht in wk_CC1 gleichzeitig user spezifisch bilden. Doch ein anderer table wird gebraucht.
 so ist WK_PERSONAL entstanden.
