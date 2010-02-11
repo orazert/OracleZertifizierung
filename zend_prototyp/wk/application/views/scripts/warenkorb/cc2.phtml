@@ -1,0 +1,21 @@
+<!-- application/views/scripts/warenkorb/index.phtml -->
+
+<table border=1>
+	    <tr><td>User</td>
+    			<td>CC1_Bezeichnung</td>
+    			<td>CC2_Bezeichnung</td>
+    	    <td>Ist VPI</td>
+    	    <td>Default VPI</td>
+    </tr>
+      <?php foreach ($this->entries as $entry): ?>
+
+    <tr>	<td><?php echo $this->escape($entry->user_name) ?></td>
+    			<td><?php echo $this->escape($entry->cc1_bezeichnung) ?></td>
+    			<td><?php echo $this->escape($entry->cc2_bezeichnung) ?></td>
+    	    <td><?php echo $this->escape($entry->ist_vpi) ?></td>
+    	    <td><?php echo $this->escape($entry->default_vpi) ?></td>
+    	</tr>
+
+    <?php endforeach ?>
+</table>
+</dl>

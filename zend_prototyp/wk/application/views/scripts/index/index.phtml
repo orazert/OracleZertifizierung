@@ -1,0 +1,55 @@
+<style>
+    a:link,
+    a:visited
+    {
+        color: #0398CA;
+    }
+
+    span#zf-name
+    {
+        color: #91BE3F;
+    }
+
+    div#welcome
+    {
+        color: #FFFFFF;
+        background-image: url(http://framework.zend.com/images/bkg_header.jpg);
+        width:  600px;
+        height: 400px;
+        border: 2px solid #444444;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    div#more-information
+    {
+        background-image: url(http://framework.zend.com/images/bkg_body-bottom.gif);
+        height: 100%;
+    }
+</style>
+<div id="welcome" >
+    <div id="more-information" >
+        <p><img src="http://framework.zend.com/images/PoweredBy_ZF_4LightBG.png" /></p>
+        <p>
+            <a href="<?php echo $this->url(
+            array('controller'=>'warenkorb', 'action'=>'cc1'), 
+            'default', 
+            true) ?>"> Ebene CC1</a>  <br/><br/>
+            
+            <a href="<?php echo $this->url(
+            array('controller'=>'warenkorb', 'action'=>'cc2'), 
+            'default', 
+            true) ?>"> Ebene CC2</a>  <br/><br/>
+            
+            <a href="<?php echo $this->url(
+            array('controller'=>'warenkorb', 'action'=>'cc3'), 
+            'default', 
+            true) ?>"> Ebene CC3</a>  <br/><br/>
+            
+            <a href="<?php echo $this->url(
+            array('controller'=>'warenkorb', 'action'=>'wc'), 
+            'default', 
+            true) ?>"> Ebene WC</a>  <br/><br/>
+        </p>
+    </div>
+</div>
