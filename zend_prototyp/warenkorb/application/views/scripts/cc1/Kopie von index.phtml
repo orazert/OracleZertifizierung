@@ -1,0 +1,10 @@
+<br /><br /><center>View script for controller <b>cc1</b> and script/action name <b>index</b></center>
+
+Hauptgruppen: <br />
+<dl>
+    <?php foreach ($this->entries as $entry): ?>
+    <?php echo $this->escape($entry->cc1) ?>
+    <?php echo $this->escape($entry->cc1_bezeichnung) ?>
+    <br>
+	<?php endforeach ?>	
+</dl>
