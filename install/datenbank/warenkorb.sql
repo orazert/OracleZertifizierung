@@ -1,8 +1,7 @@
-/* drop
-drop table ext_hauptgruppen;
-drop table ext_untergruppen_1;
-drop table ext_untergruppen_2;
-drop table ext_waren;
+drop view v_waren_person;
+drop view v_cc3_person_union;
+drop view v_cc2_person_union;
+drop view v_cc1_person_union;
 
 drop table wk_personal;
 drop table wk_user;
@@ -17,17 +16,17 @@ drop procedure upd_wk_cc3;
 
 drop sequence  WK_SEQ;
 drop sequence  WK_WP_SEQ;
-*/
+commit;
 
-
- -------sequence
+ -------sequence for cc1_2/cc2_id/cc3_id/wc_id
  create sequence  WK_SEQ  minvalue 1 maxvalue 999999999999999999999999999 
  increment by 1 start with 1000 cache 20 noorder  nocycle ;
  
+ -------sequence for user_id
   create sequence  WK_WP_SEQ  minvalue 1 maxvalue 999999999999999999999999999 
  increment by 1 start with 80000000 cache 20 noorder  nocycle ;
 
--------hauptgruppen
+-------hauptgruppen CC1
 create table ext_hauptgruppen
  (
      cc1 number,
@@ -104,7 +103,7 @@ end;
 insert into wk_cc1 (cc1, cc1_bezeichnung)
 select cc1, bezeichnung from ext_hauptgruppen;
 
--------untergruppen_1
+-------untergruppen_1  CC2
 
 create table ext_untergruppen_1
 (
@@ -199,7 +198,7 @@ insert into  wk_cc2 (cc1_id, cc2, cc2_bezeichnung)
 select (select cc1_id from wk_cc1 where ext.cc1=wk_cc1.cc1), cc2,  bezeichnung from ext_untergruppen_1 ext;
  
 
--------untergruppen_2
+-------untergruppen_2  CC3
 create table ext_untergruppen_2
 (
      cc1 number,
@@ -297,7 +296,7 @@ insert into  wk_cc3 (cc2_id, cc3, cc3_bezeichnung)
 select (select w2.cc2_id from wk_cc2 w2, wk_cc1 w1
 where w2.cc1_id = w1.cc1_id and w1.cc1=ext.cc1 and w2.cc2=ext.cc2), cc3, bezeichnung from ext_untergruppen_2 ext;
 
--------waren 
+-------Warencode
 create table ext_waren
  (
      cc1 number,
@@ -411,53 +410,10 @@ insert into wk_warencode
 -- Start of DDL Script for Procedure HR.UPD_WK_CC1
 -- Generated 7-Feb-2010 19:41:14 from HR@ORCL
 
-CREATE OR REPLACE 
-PROCEDURE upd_wk_cc1
- IS
-  cursor c is
-        select cc1_id from wk_cc1;
-  v_vpi_sum number;
-  v_hvpi_sum number;
-BEGIN 
-    for rs in c loop       
-        select sum(cc2_vpi), sum(cc2_hvpi) 
-        into v_vpi_sum, v_hvpi_sum from wk_cc2
-        where cc1_id=rs.cc1_id;
-dbms_output.put_line(rs.cc1_id);
-        update wk_cc1
-        set cc1_vpi=v_vpi_sum, cc1_hvpi=v_hvpi_sum
-        where cc1_id=rs.cc1_id;
-    end loop;
-END;
-/
-
-
--- Start of DDL Script for Procedure HR.UPD_WK_CC2
--- Generated 7-Feb-2010 19:41:50 from HR@ORCL
-
-CREATE OR REPLACE 
-PROCEDURE upd_wk_cc2
- IS
-  cursor c is
-        select cc2_id from wk_cc2;
-  v_vpi_sum number;
-  v_hvpi_sum number;
-BEGIN 
-    for rs in c loop       
-        select sum(cc3_vpi), sum(cc3_hvpi) 
-        into v_vpi_sum, v_hvpi_sum from wk_cc3
-        where cc2_id=rs.cc2_id;
-
-        update wk_cc2
-        set cc2_vpi=v_vpi_sum, cc2_hvpi=v_hvpi_sum
-        where cc2_id=rs.cc2_id;
-    end loop;
-END;
-/
-
 -- Start of DDL Script for Procedure HR.UPD_WK_CC3
 -- Generated 7-Feb-2010 19:42:03 from HR@ORCL
 
+--einmalige Verwendung for updating sum(vpi)  wc->cc3
 CREATE OR REPLACE 
 PROCEDURE upd_wk_cc3
  IS
@@ -480,6 +436,52 @@ BEGIN
 END;
 /
 
+-- Start of DDL Script for Procedure HR.UPD_WK_CC2
+-- Generated 7-Feb-2010 19:41:50 from HR@ORCL
+--einmalige Verwendung for updating sum(vpi)  cc3->cc2
+
+CREATE OR REPLACE 
+PROCEDURE upd_wk_cc2
+ IS
+  cursor c is
+        select cc2_id from wk_cc2;
+  v_vpi_sum number;
+  v_hvpi_sum number;
+BEGIN 
+    for rs in c loop       
+        select sum(cc3_vpi), sum(cc3_hvpi) 
+        into v_vpi_sum, v_hvpi_sum from wk_cc3
+        where cc2_id=rs.cc2_id;
+
+        update wk_cc2
+        set cc2_vpi=v_vpi_sum, cc2_hvpi=v_hvpi_sum
+        where cc2_id=rs.cc2_id;
+    end loop;
+END;
+/
+
+--einmalige Verwendung for updating sum(vpi)  cc2->cc1 
+CREATE OR REPLACE 
+PROCEDURE upd_wk_cc1
+ IS
+  cursor c is
+        select cc1_id from wk_cc1;
+  v_vpi_sum number;
+  v_hvpi_sum number;
+BEGIN 
+    for rs in c loop       
+        select sum(cc2_vpi), sum(cc2_hvpi) 
+        into v_vpi_sum, v_hvpi_sum from wk_cc2
+        where cc1_id=rs.cc1_id;
+dbms_output.put_line(rs.cc1_id);
+        update wk_cc1
+        set cc1_vpi=v_vpi_sum, cc1_hvpi=v_hvpi_sum
+        where cc1_id=rs.cc1_id;
+    end loop;
+END;
+/
+
+--execute bottom up
 
 exec UPD_WK_CC3;
 /
@@ -488,7 +490,14 @@ exec UPD_WK_CC2;
 exec UPD_WK_CC1;
 /
 
+--drop external tables after import
+drop table ext_hauptgruppen;
+drop table ext_untergruppen_1;
+drop table ext_untergruppen_2;
+drop table ext_waren;
+commit;
 
+--User
 CREATE TABLE wk_user
     (user_id                        NUMBER NOT NULL,
     user_name                      VARCHAR2(20),
@@ -549,6 +558,7 @@ VALUES
 -- Start of DDL Script for Table HR.WK_PERSONAL
 -- Generated 7-Feb-2010 21:09:55 from HR@ORCL
 
+-- Userspezifischer Warenkorb
 CREATE TABLE wk_personal
     (wp_id                          NUMBER NOT NULL,
     user_id                        NUMBER,
@@ -613,27 +623,210 @@ end;
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (222222, (select cc1_id from wk_cc1 where cc1=1), 22)
+VALUES (222222, (select cc1_id from wk_cc1 where cc1=6), 22.2)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (333333, (select cc1_id from wk_cc1 where cc1=1), 15)
+VALUES (333333, (select cc1_id from wk_cc1 where cc1=1), 15.5)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (333333, (select cc1_id from wk_cc1 where cc1=5), 33)
+VALUES (333333, (select cc1_id from wk_cc1 where cc1=5), 33.3)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
 VALUES (333333, 
-(select w2.cc2_id from wk_cc1 w1, wk_cc2 w2 where w2.cc1_id=w1.cc1_id and w1.cc1=8 and w2.cc2=1), 33)
+(select w2.cc2_id from wk_cc1 w1, wk_cc2 w2 where w2.cc1_id=w1.cc1_id and w1.cc1=8 and w2.cc2=1), 13.8)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (444444, (select cc1_id from wk_cc1 where cc1=10), 44)
+VALUES (444444, (select cc1_id from wk_cc1 where cc1=10), 44.4)
+/
+
+insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
+VALUES (333333, 
+(select w2.cc2_id from wk_cc1 w1, wk_cc2 w2 where w2.cc1_id=w1.cc1_id and w1.cc1=10 and w2.cc2=5), 4.9)
+/
+
+insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
+VALUES (333333, 
+(select w3.cc3_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3 
+where w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id 
+and w1.cc1=12 and w2.cc2=3 and w3.cc3=1), 16.3)
+/
+
+insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
+VALUES (333333, 
+(select w2.cc2_id from wk_cc1 w1, wk_cc2 w2 
+where w2.cc1_id=w1.cc1_id and w1.cc1=8 and w2.cc2=2), 2.8)
+/
+
+insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
+VALUES (222222, 
+(select wc.wc_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3, wk_warencode wc 
+where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id 
+and w1.cc1=1 and w2.cc2=1 and w3.cc3=4 and warencode=48), 2.1)
+/
+
+insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
+VALUES (222222, 
+(select wc.wc_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3, wk_warencode wc 
+where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id 
+and w1.cc1=1 and w2.cc2=1 and w3.cc3=4 and warencode=49), 2.5)
+/
+
+insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
+VALUES (222222, 
+(select wc.wc_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3, wk_warencode wc 
+where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id  
+and w1.cc1=1 and w2.cc2=1 and w3.cc3=4 and warencode=50), 3.2)
+/
+
+insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
+VALUES (666666, 
+(select wc.wc_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3, wk_warencode wc 
+where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id  
+and w1.cc1=1 and w2.cc2=1 and w3.cc3=4 and warencode=60), 3.7)
+/
+
+insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
+VALUES (444444, 
+(select wc.wc_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3, wk_warencode wc 
+where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id  
+and w1.cc1=4 and w2.cc2=3 and w3.cc3=2 and warencode=723), 2.6)
+/
+
+insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
+VALUES (222222, 
+(select w3.cc3_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3 
+where w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id 
+and w1.cc1=1 and w2.cc2=1 and w3.cc3=6), 4.9)
 /
 
 commit;
+
+-- Start of DDL Script for View HR.V_WAREN_PERSON
+-- Generated 11-Feb-2010 12:21:00 from HR@ORCL
+
+--Aus der Sicht: Ebene Wc
+CREATE OR REPLACE VIEW v_waren_person (
+   user_id,
+   user_name,
+   cc1_id,
+   cc2_id,
+   cc3_id,
+   wc_id,
+   cc1,
+   cc1_bezeichnung,
+   cc2,
+   cc2_bezeichnung,
+   cc3,
+   cc3_bezeichnung,
+   warencode,
+   wc_bezeichnung,
+   ist_vpi,
+   default_vpi )
+AS
+select u.user_id,u.user_name, w1.cc1_id, w2.cc2_id, w3.cc3_id, wc.wc_id, w1.cc1, w1.cc1_bezeichnung,
+w2.cc2, w2.cc2_bezeichnung,
+w3.cc3, w3.cc3_bezeichnung,
+wc.warencode, wc.wc_bezeichnung, p.ist_vpi ist_vpi, wc_vpi default_vpi
+from wk_warencode wc, wk_cc3 w3, wk_cc2 w2, wk_cc1 w1, wk_personal p, wk_user u
+where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id = w1.cc1_id
+and wc.wc_id=p.wk_id and p.user_id=u.user_id
+/
+
+
+-- End of DDL Script for View HR.V_WAREN_PERSON
+
+-- Start of DDL Script for View HR.V_CC3_PERSON_UNION
+-- Generated 11-Feb-2010 12:20:47 from HR@ORCL
+
+--Aus der Sicht: Ebene cc3 = cc3 input + wc input 
+CREATE OR REPLACE VIEW v_cc3_person_union (
+   user_id,
+   user_name,
+   cc1_id,
+   cc1_bezeichnung,
+   cc2_id,
+   cc2_bezeichnung,
+   cc3_id,
+   cc3_bezeichnung,
+   ist_vpi,
+   default_vpi )
+AS
+select u.user_id,u.user_name, w1.cc1_id, w1.cc1_bezeichnung,w2.cc2_id,w2.cc2_bezeichnung,w3.cc3_id,w3.cc3_bezeichnung, p.ist_vpi ist_vpi, w3.cc3_vpi default_vpi
+from  wk_cc3 w3, wk_cc2 w2, wk_cc1 w1, wk_personal p, wk_user u
+where  w3.cc2_id=w2.cc2_id and w2.cc1_id = w1.cc1_id
+and w3.cc3_id=p.wk_id and p.user_id=u.user_id
+union
+select a."USER_ID",a."USER_NAME",a."CC1_ID",a."CC1_BEZEICHNUNG",a."CC2_ID",a."CC2_BEZEICHNUNG",a."CC3_ID",a."CC3_BEZEICHNUNG",a."SUM(IST_VPI)", w.cc3_vpi from
+(select user_id, user_name, cc1_id,cc1_bezeichnung,cc2_id,cc2_bezeichnung,cc3_id, cc3_bezeichnung,sum(ist_vpi)
+from v_waren_person
+where cc3_id in (select cc3_id from wk_cc3)
+group by user_id,user_name,cc3_id, cc2_id, cc1_id,cc1_bezeichnung,cc2_bezeichnung,cc3_bezeichnung) a, wk_cc3 w
+where a.cc3_id=w.cc3_id
+/
+
+
+-- End of DDL Script for View HR.V_CC3_PERSON_UNION
+
+-- Start of DDL Script for View HR.V_CC2_PERSON_UNION
+-- Generated 11-Feb-2010 12:20:21 from HR@ORCL
+
+--Aus der Sicht: Ebene cc2 = cc2 input + cc3 input 
+CREATE OR REPLACE VIEW v_cc2_person_union (
+   user_id,
+   user_name,
+   cc1_id,
+   cc1_bezeichnung,
+   cc2_id,
+   cc2_bezeichnung,
+   ist_vpi,
+   default_vpi )
+AS
+select u.user_id,u.user_name, w1.cc1_id, w1.cc1_bezeichnung,w2.cc2_id,w2.cc2_bezeichnung, p.ist_vpi ist_vpi, w2.cc2_vpi default_vpi
+from   wk_cc2 w2, wk_cc1 w1, wk_personal p, wk_user u
+where  w2.cc1_id = w1.cc1_id
+and w2.cc2_id=p.wk_id and p.user_id=u.user_id
+union
+select a."USER_ID",a."USER_NAME",a."CC1_ID",a."CC1_BEZEICHNUNG",a."CC2_ID",a."CC2_BEZEICHNUNG",a."SUM(IST_VPI)", w.cc2_vpi from
+(select user_id, user_name, cc1_id, cc1_bezeichnung,cc2_id,cc2_bezeichnung, sum(ist_vpi)
+from v_cc3_person_union
+group by user_id,user_name,cc1_id, cc1_bezeichnung,cc2_id,cc2_bezeichnung) a, wk_cc2 w
+where a.cc2_id=w.cc2_id
+/
+
+
+-- End of DDL Script for View HR.V_CC2_PERSON_UNION
+
+-- Start of DDL Script for View HR.V_CC1_PERSON_UNION
+-- Generated 11-Feb-2010 12:19:32 from HR@ORCL
+
+--Aus der Sicht: Ebene cc1 = cc1 input + cc2 input 
+CREATE OR REPLACE VIEW v_cc1_person_union (
+   user_id,
+   user_name,
+   cc1_id,
+   cc1_bezeichnung,
+   ist_vpi,
+   default_vpi )
+AS
+select u.user_id,u.user_name, w1.cc1_id,w1.cc1_bezeichnung,p.ist_vpi ist_vpi, w1.cc1_vpi default_vpi
+from   wk_cc1 w1, wk_personal p, wk_user u
+where  w1.cc1_id=p.wk_id and p.user_id=u.user_id
+UNION
+select a."USER_ID",a."USER_NAME",a."CC1_ID",a."CC1_BEZEICHNUNG",a."SUM(IST_VPI)", w.cc1_vpi from
+(select user_id, user_name, cc1_id, cc1_bezeichnung, sum(ist_vpi)
+from v_cc2_person_union
+group by user_id, user_name, cc1_id, cc1_bezeichnung)  a, wk_cc1 w
+where a.cc1_id=w.cc1_id
+/
+
+
+-- End of DDL Script for View HR.V_CC1_PERSON_UNION
+
+
 select count(*) from wk_warencode;
 
 /*   
