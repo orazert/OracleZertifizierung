@@ -1,0 +1,36 @@
+<?php 
+	 $logger = Zend_Registry::get('logger');
+	 $logger->debug( 'scrpis/cc2/index.phtml> '. ' print table');
+	 $link = $this->entries['LINK'];
+	 
+	 $url1 = $this->url(array('controller'=>'cc1','action' => 'index'), 'default', true);
+	 $url2 = $this->url(array('controller'=>'cc2','action' => 'index', 'cc1' => $link['CC1']), 'default', true);
+	 
+	 print '<h2>Warenkorb [ <a href="' . $url1 . '">cc1</a> / ';
+	 print '<a href="' . $url2 . '">cc2</a> ]</h2>';
+	 
+	 $data = $this->entries['DATA'];
+	  print '<table border=1>';
+	  print '<tr><th>CC1</th><th>CC2</th><th>Bezeichnung</th><th>VPI</th><th>Wert</th></tr>';
+	  foreach ($data as $entry) {
+	    $cc1 = $entry['CC1'];
+		$cc2 = $entry['CC2'];
+		$bezeichnung = $entry['CC2_BEZEICHNUNG'];
+		$vpi = $entry['CC2_VPI'];
+		$val = $entry['VAL'];
+		$userDef = $entry['USER_DEF'];
+		$url = $this->url(array('controller'=>'cc3','action' => 'index', 'cc1' => $cc1, 'cc2' => $cc2), 'default', true);
+	    print '<tr>';
+		print '<td>' . $this->escape($cc1) . '</td>';
+		print '<td>' . $this->escape($cc2) . '</td>';
+		print  '<td><a href="' . $url .     '">' . $this->escape($bezeichnung) .'</a>' . '</td>'; 
+		print '<td>' . $this->escape($vpi) . '</td>';
+		if ($userDef == 1) {
+		     print '<td><font color="blue"><b>' . $this->escape($val) . '</b></font></td>';
+	    } else {
+		     print '<td>' . $this->escape($val) . '</td>';
+		}
+	    print '</tr>';
+	  }
+	  print '</table>';
+?>
