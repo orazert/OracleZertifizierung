@@ -1,0 +1,26 @@
+
+<h2><font color="blue">Hauptgruppen: </font></h2>
+
+    <?php 
+	 $logger = Zend_Registry::get('logger');
+	 $logger->debug('cc1/index.phtml: print table wk_cc1');
+	 print "<table border=1>";
+	  
+	  $print_table_header = true;
+	  foreach ($this->entries as $row) {
+	    if( $print_table_header == true) {
+		  print "<tr>"; 
+	      foreach ($row as $key => $val) {
+		     print "<th>" . $this->escape($key) . "</th>";
+		  }
+		 print "</tr>";
+		 $print_table_header = false;
+		} 
+        
+		print "<tr>";
+		foreach ($row as $val) {
+		   print "<td>" . $this->escape($val) . "</td>";
+		} 
+	  }
+	  print "</table>";
+	?>

@@ -4,136 +4,94 @@
 
 class Default_Model_CC1
 {
-    protected $_cc1;
-    protected $_cc1_bezeichnung;
-	protected $_vpi;
-	protected $_hvpi;
-    protected $_id;
-    protected $_mapper;
-
-    public function __construct(array $options = null)
-    {
-        if (is_array($options)) {
-            $this->setOptions($options);
-        }
-    }
-
-    public function __set($name, $value)
-    {
-        $method = 'set' . $name;
-        if (('mapper' == $name) || !method_exists($this, $method)) {
-            throw new Exception('Invalid CC1 property');
-        }
-        $this->$method($value);
-    }
-
-    public function __get($name)
-    {
-        $method = 'get' . $name;
-        if (('mapper' == $name) || !method_exists($this, $method)) {
-            throw new Exception('Invalid CC1 property');
-        }
-        return $this->$method();
-    }
-    public function __toString()
+    
+	public function calc($tab)
 	{
-	    return "Default_Model_CC1 { $this->_cc1 | $this->_cc1_bezeichnung |  $this->_vpi |  $this->_hvpi }";
+	  $logger = Zend_Registry::get('logger');
+	  $logger->info( '-> Default_Model_CC1->calc()');
+	  
+	  $sum = 0.0;
+	  $sumUser = 0.0;
+	  
+	  foreach ($tab as $row) {
+	      $val = str_replace(',','.',$row['VAL']);
+	      if ($row['USER_DEF'] == 1 ) {
+	          $sumUser += $val ;
+	      } else {
+	         $sum += $val;
+	      }
+	   }
+	   
+	   $gesamtSumme = $sumUser + $sum;
+	   $logger->debug("Default_Model_CC1->calc() sumUser = $sumUser, sum = $sum, gesamtSumme = $gesamtSumme");
+	   
+	   $diff = 100.0 - $sumUser;
+	   $factor = $diff / $sum;
+	   
+	   $logger->debug("Default_Model_CC1->calc()  factor = $factor");
+	   
+	   $res = array();
+	   
+	   $sumUser = 0.0;
+	   $sum = 0.0;
+	   
+	   foreach ($tab as $key => $row) {
+	      $val = str_replace(',','.',$row['VAL']);
+		  $logger->debug(" val = $val");
+	      $logger->debug( '  Default_Model_CC1->calc() userDef / val = ' . $row['USER_DEF'] . '/ '. $row['VAL'] . '/ ' . $val );
+	      $row['CC1_VPI'] =  str_replace('.',',',sprintf('%7.4F',str_replace(',','.',$row['CC1_VPI'])));
+		  if ($row['USER_DEF'] == 1 ) {
+	         $sumUser += $val ;
+			 $row['VAL'] = str_replace('.',',',sprintf('%7.4F',$val));
+			 $res[$key] = $row;
+	      }  else {
+	        $val = str_replace(',','.',$row['VAL']);
+	        $newVal = $val * $factor;
+			$sum += $newVal ;
+			$row['VAL'] = str_replace('.',',',sprintf('%7.4F',$newVal));
+			$res[$key] = $row;
+	      }
+	  }
+	   $gesamtSumme = $sumUser + $sum;
+	   $logger->debug("Default_Model_CC1->calc() sumUser = $sumUser, sum = $sum, gesamtSumme = $gesamtSumme");
+	   $logger->info( '<- Default_Model_CC1->calc()');
+       return $res;	   
+	 }
+	
+	public function fetchAll($userId)
+	{
+	   $logger = Zend_Registry::get('logger');
+	   $logger->info( '-> Default_Model_CC1->fetch() - userId = ' . $userId);
+	   
+	
+	   /*
+	           $sql = 'select cc1, cc1_bezeichnung, cc1_vpi, cc1_hvpi from wk_cc1 order by cc1';//
+	      */
+	   
+	   /*
+	  $sql = 'with pers_wk as ' .
+               '(select t1.cc1_id, t2.ist_vpi ' .
+                'from wk_cc1 t1 left join wk_personal t2 on t1.cc1_id = t2.wk_id ' .
+                 "where t2.user_id = $userId ) " .
+              'select cc1, cc1_bezeichnung, cc1_vpi, coalesce(ist_vpi,cc1_vpi) val, nvl2(ist_vpi,1,0) user_def ' .
+			  'from wk_cc1 t3 left join pers_wk t4 on t3.cc1_id = t4.cc1_id ' .
+              'order by cc1';
+	*/
+
+       $sql =  
+		  'select cc1, cc1_bezeichnung, cc1_vpi,  coalesce(ist_vpi,cc1_vpi) val, nvl2(ist_vpi,1,0) user_def '.
+          "from wk_cc1 t1 left join wk_personal tp on t1.cc1_id = tp.wk_id and user_id = $userId " .
+          'order by cc1';
+	
+	   $logger->debug( ' sql =  ' . $sql);
+	   
+	   $db = Zend_Registry::Get('db');
+	   $result = $db->fetchAll($sql);
+	   $result = $this->calc($result);
+	   
+		
+	   $logger->debug( ' result ' . var_export($result,true));
+	   $logger->info( '<- Default_Model_CC1->fetc_cc1()');
+	   return $result;
 	}
-	
-    public function setOptions(array $options)
-    {
-        $methods = get_class_methods($this);
-        foreach ($options as $key => $value) {
-            $method = 'set' . ucfirst($key);
-            if (in_array($method, $methods)) {
-                $this->$method($value);
-            }
-        }
-        return $this;
-    }
-
-    public function setCc1($val)
-    {
-        $this->_cc1 = $val;
-		return $this;
-    }
-	
-    public function getCc1()
-    {
-        return $this->_cc1;
-    }
- 
-    public function getCc1_vpi()
-    {
-        return $this->_vpi;
-    }
-	
-	public function setCc1_vpi($val)
-    {
-        $this->_vpi = $val;
-		return $this;
-    }
-	
-    public function getCc1_hvpi()
-    {
-        return $this->_hvpi;
-    }
-	
-	public function setCc1_hvpi($val)
-    {
-        $this->_hvpi = $val;
-		return $this;
-    }
-	
-	public function setCc1_bezeichnung($val)
-    {
-        $this->_cc1_bezeichnung = $val;
-		return $this;
-    }
-	
-    public function getCc1_bezeichnung()
-    {
-        return $this->_cc1_bezeichnung;
-    }
-
-    public function setId($id)
-    {
-        $this->_id = (int) $id;
-        return $this;
-    }
-
-    public function getId()
-    {
-        return $this->_id;
-    }
-
-    public function setMapper($mapper)
-    {
-        $this->_mapper = $mapper;
-        return $this;
-    }
-
-    public function getMapper()
-    {
-        if (null === $this->_mapper) {
-            $this->setMapper(new Default_Model_CC1Mapper());
-        }
-        return $this->_mapper;
-    }
-
-    public function save()
-    {
-        $this->getMapper()->save($this);
-    }
-
-    public function find($id)
-    {
-        $this->getMapper()->find($id, $this);
-        return $this;
-    }
-
-    public function fetchAll()
-    {
-        return $this->getMapper()->fetchAll();
-    }
 }
