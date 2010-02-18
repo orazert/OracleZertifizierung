@@ -16,15 +16,20 @@ drop procedure upd_wk_cc3;
 
 drop sequence  WK_SEQ;
 drop sequence  WK_WP_SEQ;
+drop sequence  WK_USER_SEQ;
 commit;
 
  -------sequence for cc1_2/cc2_id/cc3_id/wc_id
  create sequence  WK_SEQ  minvalue 1 maxvalue 999999999999999999999999999 
  increment by 1 start with 1000 cache 20 noorder  nocycle ;
  
- -------sequence for user_id
+ -------sequence for user_warenkorb_id
   create sequence  WK_WP_SEQ  minvalue 1 maxvalue 999999999999999999999999999 
  increment by 1 start with 80000000 cache 20 noorder  nocycle ;
+ 
+  -------sequence for user_id
+  create sequence  WK_USER_SEQ  minvalue 1 maxvalue 999999999999999999999999999 
+ increment by 1 start with 600000 cache 20 noorder  nocycle ;
 
 -------hauptgruppen CC1
 create table ext_hauptgruppen
@@ -498,6 +503,9 @@ drop table ext_waren;
 commit;
 
 --User
+-- Start of DDL Script for Table HR.WK_USER
+-- Generated 16-Feb-2010 21:36:31 from HR@ORCL
+
 CREATE TABLE wk_user
     (user_id                        NUMBER NOT NULL,
     user_name                      VARCHAR2(20),
@@ -530,29 +538,64 @@ CREATE TABLE wk_user
 
 
 
-INSERT INTO wk_user
-VALUES
-(111111,'Statistik2006','123')
+
+
+-- Constraints for WK_USER
+
+ALTER TABLE wk_user
+ADD CONSTRAINT wk_user_uk UNIQUE (user_name)
+USING INDEX
+  PCTFREE     10
+  INITRANS    2
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
 /
-INSERT INTO wk_user
-VALUES
-(222222,'Honglei','123')
+
+
+-- Triggers for WK_USER
+
+CREATE OR REPLACE TRIGGER wk_user_insert_trg
+ BEFORE
+  INSERT
+ ON wk_user
+REFERENCING NEW AS NEW OLD AS OLD
+ FOR EACH ROW
+begin
+  :new.user_id := wk_user_seq.nextval;
+end;
 /
-INSERT INTO wk_user
+
+
+-- End of DDL Script for Table HR.WK_USER
+
+INSERT INTO wk_user (user_name, user_pwd)
 VALUES
-(333333,'Ludwig','123')
+('Statistik2006','123')
 /
-INSERT INTO wk_user
+INSERT INTO wk_user (user_name, user_pwd)
 VALUES
-(444444,'Mario','123')
+('Honglei','123')
 /
-INSERT INTO wk_user
+INSERT INTO wk_user (user_name, user_pwd)
 VALUES
-(555555,'Pummel','123')
+('Ludwig','123')
 /
-INSERT INTO wk_user
+INSERT INTO wk_user (user_name, user_pwd)
 VALUES
-(666666,'Mark','123')
+('Mario','123')
+/
+INSERT INTO wk_user (user_name, user_pwd)
+VALUES
+('Pummel','123')
+/
+INSERT INTO wk_user (user_name, user_pwd)
+VALUES
+('Mark','123')
 /
 
 -- Start of DDL Script for Table HR.WK_PERSONAL
@@ -623,81 +666,81 @@ end;
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (222222, (select cc1_id from wk_cc1 where cc1=6), 22.2)
+VALUES ((select user_id from wk_user where user_name='Honglei'), (select cc1_id from wk_cc1 where cc1=6), 22.2)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (333333, (select cc1_id from wk_cc1 where cc1=1), 15.5)
+VALUES ((select user_id from wk_user where user_name='Ludwig'), (select cc1_id from wk_cc1 where cc1=1), 15.5)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (333333, (select cc1_id from wk_cc1 where cc1=5), 33.3)
+VALUES ((select user_id from wk_user where user_name='Ludwig'), (select cc1_id from wk_cc1 where cc1=5), 33.3)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (333333, 
+VALUES ((select user_id from wk_user where user_name='Ludwig'), 
 (select w2.cc2_id from wk_cc1 w1, wk_cc2 w2 where w2.cc1_id=w1.cc1_id and w1.cc1=8 and w2.cc2=1), 13.8)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (444444, (select cc1_id from wk_cc1 where cc1=10), 44.4)
+VALUES ((select user_id from wk_user where user_name='Mario'), (select cc1_id from wk_cc1 where cc1=10), 44.4)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (333333, 
+VALUES ((select user_id from wk_user where user_name='Ludwig'), 
 (select w2.cc2_id from wk_cc1 w1, wk_cc2 w2 where w2.cc1_id=w1.cc1_id and w1.cc1=10 and w2.cc2=5), 4.9)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (333333, 
+VALUES ((select user_id from wk_user where user_name='Ludwig'), 
 (select w3.cc3_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3 
 where w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id 
 and w1.cc1=12 and w2.cc2=3 and w3.cc3=1), 16.3)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (333333, 
+VALUES ((select user_id from wk_user where user_name='Ludwig'), 
 (select w2.cc2_id from wk_cc1 w1, wk_cc2 w2 
 where w2.cc1_id=w1.cc1_id and w1.cc1=8 and w2.cc2=2), 2.8)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (222222, 
+VALUES ((select user_id from wk_user where user_name='Honglei'), 
 (select wc.wc_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3, wk_warencode wc 
 where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id 
 and w1.cc1=1 and w2.cc2=1 and w3.cc3=4 and warencode=48), 2.1)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (222222, 
+VALUES ((select user_id from wk_user where user_name='Honglei'), 
 (select wc.wc_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3, wk_warencode wc 
 where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id 
 and w1.cc1=1 and w2.cc2=1 and w3.cc3=4 and warencode=49), 2.5)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (222222, 
+VALUES ((select user_id from wk_user where user_name='Honglei'), 
 (select wc.wc_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3, wk_warencode wc 
 where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id  
 and w1.cc1=1 and w2.cc2=1 and w3.cc3=4 and warencode=50), 3.2)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (666666, 
+VALUES ((select user_id from wk_user where user_name='Mark'), 
 (select wc.wc_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3, wk_warencode wc 
 where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id  
 and w1.cc1=1 and w2.cc2=1 and w3.cc3=4 and warencode=60), 3.7)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (444444, 
+VALUES ((select user_id from wk_user where user_name='Mario'), 
 (select wc.wc_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3, wk_warencode wc 
 where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id  
 and w1.cc1=4 and w2.cc2=3 and w3.cc3=2 and warencode=723), 2.6)
 /
 
 insert into WK_PERSONAL (user_id, wk_id, ist_vpi)
-VALUES (222222, 
+VALUES ((select user_id from wk_user where user_name='Honglei'), 
 (select w3.cc3_id from wk_cc1 w1, wk_cc2 w2, wk_cc3 w3 
 where w3.cc2_id=w2.cc2_id and w2.cc1_id=w1.cc1_id 
 and w1.cc1=1 and w2.cc2=1 and w3.cc3=6), 4.9)
