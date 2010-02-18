@@ -1,0 +1,25 @@
+
+<h2><font color="blue">Untergruppen CC2: </font></h2>
+
+    <?php 
+	 $logger = Zend_Registry::get('logger');
+	 $logger->debug( 'scrpis/cc2/index.phtml> '. ' print table');
+	  print '<table border=1>';
+	  print '<tr><th>CC1</th><th>CC2</th><th>Bezeichnung</th><th>VPI</th></tr>';
+	  foreach ($this->entries as $entry) {
+	    $cc1 = $entry['CC1'];
+		$cc2 = $entry['CC2'];
+		$bezeichnung = $entry['CC2_BEZEICHNUNG'];
+		$vpi = $entry['CC2_VPI'];
+		$hvpi = $entry['CC2_HVPI'];
+		$url = $this->url(array('controller'=>'auth','action' => 'getcc3', 'cc1' => $cc1, 'cc2' => $cc2), 'default', true);
+	    print '<tr>';
+		print '<td>' . $this->escape($cc1) . '</td>';
+		print '<td>' . $this->escape($cc2) . '</td>';
+		print  '<td><a href="' . $url .     '">' . $this->escape($bezeichnung) .'</a>' . '</td>'; 
+		print '<td>' . $this->escape($vpi) . '</td>';
+		//print '<td>' . $this->escape($hvpi) . '</td>';
+	    print '</tr>';
+	  }
+	  print '</table>';
+	?>

@@ -1,0 +1,33 @@
+
+<h2><font color="blue">Hauptgruppen: </font></h2>
+
+    <?php 
+	 $logger = Zend_Registry::get('logger');
+	 $logger->debug( 'scrpis/cc1/index.phtml> '. ' print table');
+	  print '<table border=1>';
+	  print '<tr><th>CC1</th><th>Bezeichnung</th><th>VPI</th><th>IST_VPI</th></tr>';
+	  foreach ($this->entries as $entry) {
+	  	$cc1_id = $entry['CC1_ID'];
+	    $cc1 = $entry['CC1'];
+		$bezeichnung = $entry['CC1_BEZEICHNUNG'];
+		$vpi = $entry['CC1_VPI'];
+		$hvpi = $entry['CC1_HVPI'];
+		$ist_vpi = $entry['IST_VPI'];
+		$url = $this->url(array('controller'=>'auth','action' => 'getcc2', 'cc1' => $cc1), 'default', true);
+		$url_modify_vpi = $this->url(array('controller'=>'auth','action' => 'modify', 'cc1_id' => $cc1_id), 'default', true);
+		$user_def = $entry['USER_DEF'];
+	    print '<tr>';
+		print '<td>' . $this->escape($cc1_id) . '</td>';
+		print  '<td><a href="' . $url .     '">' . $this->escape($bezeichnung) .'</a>' . '</td>'; 
+		print '<td>' . $this->escape($vpi) . '</td>';
+		//print '<td>' . $this->escape($hvpi) . '</td>';
+		$s = "<td";
+		if ($user_def){
+			$s = $s . ' bgcolor=#FFFF00 ';
+		}
+		$s = $s .'>';
+		print "$s" . '<a href="'. $url_modify_vpi .'">' . $this->escape($ist_vpi) . '</a>' .'</td>';
+	    print '</tr>';
+	  }
+	  print '</table>';
+	?>

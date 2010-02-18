@@ -12,10 +12,14 @@
           <actionMethod actionName="index"/>
         </controllerFile>
         <controllerFile controllerName="error"/>
-        <controllerFile controllerName="warenkorb">
+ 
+        <controllerFile controllerName="auth">
           <actionMethod actionName="index"/>
-          <actionMethod actionName="sign"/>
+          <actionMethod actionName="login"/>
+          <actionMethod actionName="logout"/>
+          <actionMethod actionName="create"/>
         </controllerFile>
+ 
       </controllersDirectory>
       <layoutsDirectory enabled="false"/>
       <modelsDirectory/>
@@ -28,11 +32,17 @@
           <viewControllerScriptsDirectory forControllerName="error">
             <viewScriptFile forActionName="error"/>
           </viewControllerScriptsDirectory>
-          <viewControllerScriptsDirectory forControllerName="warenkorb">
+           <viewControllerScriptsDirectory forControllerName="auth">
             <viewScriptFile forActionName="index"/>
           </viewControllerScriptsDirectory>
-          <viewControllerScriptsDirectory forControllerName="warenkorb">
-            <viewScriptFile forActionName="sign"/>
+          <viewControllerScriptsDirectory forControllerName="auth">
+            <viewScriptFile forActionName="login"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="auth">
+            <viewScriptFile forActionName="logout"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="auth">
+            <viewScriptFile forActionName="create"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
@@ -65,6 +75,8 @@
       <testApplicationDirectory>
         <testApplicationBootstrapFile/>
         <testApplicationControllerDirectory>
+          <testApplicationControllerFile/>
+          <testApplicationControllerFile/>
           <testApplicationControllerFile/>
         </testApplicationControllerDirectory>
       </testApplicationDirectory>
