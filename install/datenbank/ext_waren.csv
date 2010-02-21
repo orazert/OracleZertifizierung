@@ -526,9 +526,10 @@ cc1;cc2;cc3;warencode;bezeichnung;index1;prozent;index2
 9;6;0;846;Flugpauschalreisen;2.0005;64.00;1.7717
 10;1;0;445;Kindergartengebühr (3 Positionen);0.1964;74.82;0.1843
 10;1;0;467;Volksschule, Halbinternat, Non-Profit;0.0661;25.18;0.0617
-10;2;0;439;Hauptschule,;0.0661;25.18;0.0617
+10;2;0;439;Hauptschule,;0.0504;49.36;0.0466
 10;2;0;817;Schulschikurs;0.0207;20.27;0.0201
 10;2;0;818;Landschulwoche;0.0310;30.36;0.0286
+10;3;0;440;AHS, Halbinternat, Oberstufe, Non-Profit;0.0833;100;0.0779
 10;4;0;603;Studiengebühr;0.1457;100.00;0.1345
 10;5;0;98;Nachhilfe;0.1271;25.00;0.1186
 10;5;0;814;Sprachkurs;0.1101;21.65;0.1012

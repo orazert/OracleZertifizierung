@@ -1,23 +1,37 @@
-drop view v_waren_person;
-drop view v_cc3_person_union;
-drop view v_cc2_person_union;
-drop view v_cc1_person_union;
+-- oracle login with system
 
-drop table wk_personal;
-drop table wk_user;
-drop table wk_warencode;
-drop table wk_cc3;
-drop table wk_cc2;
-drop table wk_cc1;
+-- Start of DDL Script for User WK
+-- Generated 16-Feb-2010 22:21:47 from SYS@ORCL
 
-drop procedure upd_wk_cc1;
-drop procedure upd_wk_cc2;
-drop procedure upd_wk_cc3;
+drop DIRECTORY rwfiles
+/
+drop user wk cascade
+/
 
-drop sequence  WK_SEQ;
-drop sequence  WK_WP_SEQ;
-drop sequence  WK_USER_SEQ;
-commit;
+CREATE USER wk
+IDENTIFIED BY wk
+DEFAULT TABLESPACE USERS
+TEMPORARY TABLESPACE TEMP
+/
+GRANT CREATE VIEW TO wk
+/
+GRANT UNLIMITED TABLESPACE TO wk
+/
+GRANT CONNECT TO wk
+/
+GRANT RESOURCE TO wk
+/
+ALTER USER wk DEFAULT ROLE ALL
+/
+
+
+
+-- End of DDL Script for User WK
+
+CREATE DIRECTORY rwfiles AS 'd:\xampp\htdocs\OracleZertifizierung\install\datenbank';
+GRANT read, write ON DIRECTORY rwfiles TO PUBLIC;
+
+connect wk/wk
 
  -------sequence for cc1_2/cc2_id/cc3_id/wc_id
  create sequence  WK_SEQ  minvalue 1 maxvalue 999999999999999999999999999 
@@ -747,128 +761,6 @@ and w1.cc1=1 and w2.cc2=1 and w3.cc3=6), 4.9)
 /
 
 commit;
-
--- Start of DDL Script for View HR.V_WAREN_PERSON
--- Generated 11-Feb-2010 12:21:00 from HR@ORCL
-
---Aus der Sicht: Ebene Wc
-CREATE OR REPLACE VIEW v_waren_person (
-   user_id,
-   user_name,
-   cc1_id,
-   cc2_id,
-   cc3_id,
-   wc_id,
-   cc1,
-   cc1_bezeichnung,
-   cc2,
-   cc2_bezeichnung,
-   cc3,
-   cc3_bezeichnung,
-   warencode,
-   wc_bezeichnung,
-   ist_vpi,
-   default_vpi )
-AS
-select u.user_id,u.user_name, w1.cc1_id, w2.cc2_id, w3.cc3_id, wc.wc_id, w1.cc1, w1.cc1_bezeichnung,
-w2.cc2, w2.cc2_bezeichnung,
-w3.cc3, w3.cc3_bezeichnung,
-wc.warencode, wc.wc_bezeichnung, p.ist_vpi ist_vpi, wc_vpi default_vpi
-from wk_warencode wc, wk_cc3 w3, wk_cc2 w2, wk_cc1 w1, wk_personal p, wk_user u
-where wc.cc3_id=w3.cc3_id and w3.cc2_id=w2.cc2_id and w2.cc1_id = w1.cc1_id
-and wc.wc_id=p.wk_id and p.user_id=u.user_id
-/
-
-
--- End of DDL Script for View HR.V_WAREN_PERSON
-
--- Start of DDL Script for View HR.V_CC3_PERSON_UNION
--- Generated 11-Feb-2010 12:20:47 from HR@ORCL
-
---Aus der Sicht: Ebene cc3 = cc3 input + wc input 
-CREATE OR REPLACE VIEW v_cc3_person_union (
-   user_id,
-   user_name,
-   cc1_id,
-   cc1_bezeichnung,
-   cc2_id,
-   cc2_bezeichnung,
-   cc3_id,
-   cc3_bezeichnung,
-   ist_vpi,
-   default_vpi )
-AS
-select u.user_id,u.user_name, w1.cc1_id, w1.cc1_bezeichnung,w2.cc2_id,w2.cc2_bezeichnung,w3.cc3_id,w3.cc3_bezeichnung, p.ist_vpi ist_vpi, w3.cc3_vpi default_vpi
-from  wk_cc3 w3, wk_cc2 w2, wk_cc1 w1, wk_personal p, wk_user u
-where  w3.cc2_id=w2.cc2_id and w2.cc1_id = w1.cc1_id
-and w3.cc3_id=p.wk_id and p.user_id=u.user_id
-union
-select a."USER_ID",a."USER_NAME",a."CC1_ID",a."CC1_BEZEICHNUNG",a."CC2_ID",a."CC2_BEZEICHNUNG",a."CC3_ID",a."CC3_BEZEICHNUNG",a."SUM(IST_VPI)", w.cc3_vpi from
-(select user_id, user_name, cc1_id,cc1_bezeichnung,cc2_id,cc2_bezeichnung,cc3_id, cc3_bezeichnung,sum(ist_vpi)
-from v_waren_person
-where cc3_id in (select cc3_id from wk_cc3)
-group by user_id,user_name,cc3_id, cc2_id, cc1_id,cc1_bezeichnung,cc2_bezeichnung,cc3_bezeichnung) a, wk_cc3 w
-where a.cc3_id=w.cc3_id
-/
-
-
--- End of DDL Script for View HR.V_CC3_PERSON_UNION
-
--- Start of DDL Script for View HR.V_CC2_PERSON_UNION
--- Generated 11-Feb-2010 12:20:21 from HR@ORCL
-
---Aus der Sicht: Ebene cc2 = cc2 input + cc3 input 
-CREATE OR REPLACE VIEW v_cc2_person_union (
-   user_id,
-   user_name,
-   cc1_id,
-   cc1_bezeichnung,
-   cc2_id,
-   cc2_bezeichnung,
-   ist_vpi,
-   default_vpi )
-AS
-select u.user_id,u.user_name, w1.cc1_id, w1.cc1_bezeichnung,w2.cc2_id,w2.cc2_bezeichnung, p.ist_vpi ist_vpi, w2.cc2_vpi default_vpi
-from   wk_cc2 w2, wk_cc1 w1, wk_personal p, wk_user u
-where  w2.cc1_id = w1.cc1_id
-and w2.cc2_id=p.wk_id and p.user_id=u.user_id
-union
-select a."USER_ID",a."USER_NAME",a."CC1_ID",a."CC1_BEZEICHNUNG",a."CC2_ID",a."CC2_BEZEICHNUNG",a."SUM(IST_VPI)", w.cc2_vpi from
-(select user_id, user_name, cc1_id, cc1_bezeichnung,cc2_id,cc2_bezeichnung, sum(ist_vpi)
-from v_cc3_person_union
-group by user_id,user_name,cc1_id, cc1_bezeichnung,cc2_id,cc2_bezeichnung) a, wk_cc2 w
-where a.cc2_id=w.cc2_id
-/
-
-
--- End of DDL Script for View HR.V_CC2_PERSON_UNION
-
--- Start of DDL Script for View HR.V_CC1_PERSON_UNION
--- Generated 11-Feb-2010 12:19:32 from HR@ORCL
-
---Aus der Sicht: Ebene cc1 = cc1 input + cc2 input 
-CREATE OR REPLACE VIEW v_cc1_person_union (
-   user_id,
-   user_name,
-   cc1_id,
-   cc1_bezeichnung,
-   ist_vpi,
-   default_vpi )
-AS
-select u.user_id,u.user_name, w1.cc1_id,w1.cc1_bezeichnung,p.ist_vpi ist_vpi, w1.cc1_vpi default_vpi
-from   wk_cc1 w1, wk_personal p, wk_user u
-where  w1.cc1_id=p.wk_id and p.user_id=u.user_id
-UNION
-select a."USER_ID",a."USER_NAME",a."CC1_ID",a."CC1_BEZEICHNUNG",a."SUM(IST_VPI)", w.cc1_vpi from
-(select user_id, user_name, cc1_id, cc1_bezeichnung, sum(ist_vpi)
-from v_cc2_person_union
-group by user_id, user_name, cc1_id, cc1_bezeichnung)  a, wk_cc1 w
-where a.cc1_id=w.cc1_id
-/
-
-
--- End of DDL Script for View HR.V_CC1_PERSON_UNION
-
 
 select count(*) from wk_warencode;
 
