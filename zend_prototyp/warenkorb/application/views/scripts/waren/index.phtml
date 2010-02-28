@@ -1,0 +1,50 @@
+<?php 
+     require_once ( APPLICATION_PATH . '\wk_util\wk_util.php');
+	 
+	 $link = $this->entries['LINK'];
+	 
+	 $url1 = $this->url(array('controller'=>'cc1','action' => 'index'), 'default', true);
+	 $url2 = $this->url(array('controller'=>'cc2','action' => 'index', 'cc1' => $link['CC1']), 'default', true);
+     $url3	= $this->url(array('controller'=>'cc3','action' => 'index', 'cc1' => $link['CC1'], 'cc2' => $link['CC2']), 'default', true);
+	 $url4	= $this->url(array('controller'=>'waren','action' => 'index', 'cc1' => $link['CC1'], 'cc2' => $link['CC2'], 'cc3' => $link['CC3']), 'default', true);
+	 print '<h2>Warenkorb [ <a href="' . $url1 . '">cc1</a> / ';
+	 print '<a href="' . $url2 . '">cc2</a> /';
+	 print '<a href="' . $url3 . '">cc3</a> / ';
+	 print '<a href="' . $url4 . '">Waren</a> ]</h2>';
+	  
+	 $corr = $this->entries['CORR'];
+	 print '<h3>Korrelation: ' . $this->escape(wk_number_format($corr)) . '</h3>';
+	  
+	 $data = $this->entries['DATA'];
+	  print '<table border=1>';
+	  print '<tr><th>CC1</th><th>CC2</th><th>CC3</th><th>WCode</th><th>Bezeichnung</th><th>VPI</th><th>Wert</th></tr>';
+	  foreach ($data as $entry) {
+	    $cc1 = $entry['CC1'];
+		$cc2 = $entry['CC2'];
+		$cc3 =  $entry['CC3'];
+		$warencode = $entry['WARENCODE'];
+		$bezeichnung = $entry['WC_BEZEICHNUNG'];
+		$vpi = $entry['WC_VPI'];
+		$val = $entry['VAL'];
+		$userDef = $entry['USER_DEF'];
+		$id = $entry['WC_ID'];
+		//$url = $this->url(array('controller'=>'waren','action' => 'index', 'cc1' => $cc1, 'cc2' => $cc2 , 'cc3' => $cc3, 'warencode' => $warencode), 'default', true);
+		print '<tr>';
+		print '<td>' . $this->escape($cc1) . '</td>';
+		print '<td>' . $this->escape($cc2) . '</td>';
+		print '<td>' . $this->escape($cc3) . '</td>';
+		print '<td>' . $this->escape($warencode) . '</td>';
+		print  '<td>' . $this->escape($bezeichnung) . '</td>'; 
+		print '<td align ="right">' . $this->escape(wk_number_format($vpi)) . '</td>';
+		$url = $this->url(array('controller'=>'waren','action' => 'edit', 'cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'id' => $id, 'warencode' => $warencode, 'userdef' => $userDef), 'default', true);
+		if ($userDef == 1) {
+		     print  '<td align ="right"><a href="' . $url . '"><font color="blue"><b>' . $this->escape(wk_number_format($val)) .'</b></font></a></td>'; 
+	    } elseif ($userDef == 2) {
+             print  '<td align ="right"><a href="' . $url . '"><font color="red"><b>' . $this->escape(wk_number_format($val)) .'</b></font></a></td>'; 	
+		} else {
+		     print  '<td align ="right"><a href="' . $url . '"><font color="black">' . $this->escape(wk_number_format($val)) .'</font></a></td>'; 
+		}
+	    print '</tr>';
+	  }
+	  print '</table>';
+?>

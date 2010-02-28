@@ -1,6 +1,5 @@
 <?php 
-	 $logger = Zend_Registry::get('logger');
-	 $logger->debug( 'scrpis/cc2/index.phtml> '. ' print table');
+     require_once ( APPLICATION_PATH . '\wk_util\wk_util.php');
 	 $link = $this->entries['LINK'];
 	 
 	 $url1 = $this->url(array('controller'=>'cc1','action' => 'index'), 'default', true);
@@ -8,6 +7,9 @@
 	 
 	 print '<h2>Warenkorb [ <a href="' . $url1 . '">cc1</a> / ';
 	 print '<a href="' . $url2 . '">cc2</a> ]</h2>';
+	 
+	 $corr = $this->entries['CORR'];
+	 print '<h3>Korrelation: ' . $this->escape(wk_number_format($corr)) . '</h3>';
 	 
 	 $data = $this->entries['DATA'];
 	  print '<table border=1>';
@@ -20,15 +22,18 @@
 		$val = $entry['VAL'];
 		$userDef = $entry['USER_DEF'];
 		$url = $this->url(array('controller'=>'cc3','action' => 'index', 'cc1' => $cc1, 'cc2' => $cc2), 'default', true);
-	    print '<tr>';
+		print '<tr>';
 		print '<td>' . $this->escape($cc1) . '</td>';
 		print '<td>' . $this->escape($cc2) . '</td>';
 		print  '<td><a href="' . $url .     '">' . $this->escape($bezeichnung) .'</a>' . '</td>'; 
-		print '<td>' . $this->escape($vpi) . '</td>';
+		print '<td align ="right">' . $this->escape(wk_number_format($vpi)) . '</td>';
+		$url = $this->url(array('controller'=>'cc2','action' => 'edit', 'cc1' => $cc1, 'cc2' => $cc2,'userdef' => $userDef), 'default', true);
 		if ($userDef == 1) {
-		     print '<td><font color="blue"><b>' . $this->escape($val) . '</b></font></td>';
-	    } else {
-		     print '<td>' . $this->escape($val) . '</td>';
+		     print  '<td align ="right"><a href="' . $url . '"><font color="blue"><b>' . $this->escape(wk_number_format($val)) .'</b></font></a></td>'; 
+	    } elseif ($userDef == 2) {
+             print  '<td align ="right"><a href="' . $url . '"><font color="red"><b>' . $this->escape(wk_number_format($val)) .'</b></font></a></td>'; 		
+		} else {
+		     print  '<td align ="right"><a href="' . $url . '"><font color="black">' . $this->escape(wk_number_format($val)) .'</font></a></td>'; 
 		}
 	    print '</tr>';
 	  }

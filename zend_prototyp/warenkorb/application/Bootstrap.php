@@ -27,8 +27,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 		$dbname = $config->database->name;
 		$dbuser = $config->database->user;
 		$dbpassword = $config->database->password;
+		$pkg = $config->database->package;
+		Zend_Registry::set('pkg', $pkg);
 		
-		$logger->debug("Zend_Application_Bootstrap_Bootstrap->_initAutoload() Oracle: dbname = $dbname, dbuser = $dbuser");
+		$logger->debug("Zend_Application_Bootstrap_Bootstrap->_initAutoload() Oracle: dbname = $dbname, dbuser = $dbuser pkg = $pkg");
 		
         $params = array ('dbname' =>  $dbname,
                          'username' => $dbuser,

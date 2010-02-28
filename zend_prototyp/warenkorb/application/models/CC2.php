@@ -1,44 +1,70 @@
 <?php
 
-// application/models/CC12php
+// application/models/CC2php
 
 class Default_Model_CC2
-{
-    
-	public function fetchAll($userId,$cc1)
-	{
-	   $logger = Zend_Registry::get('logger');
-	   $logger->info( "-> Default_Model_CC2->fetchAll() - userId = $userId cc1 = $cc1");
+{	
+    private $logger = null;
+	private $db = null;
+	private $pkg = null;
 	
-	/*
-	 $sql = 'select cc1, cc2, cc2_bezeichnung, cc2_vpi, cc2_hvpi ' .
-           'from wk_cc1 t1, wk_cc2 t2 ' .
-           "where t1.cc1_id = t2.cc1_id and cc1 = $cc1 "  .
-           'order by cc1, cc2';
-	*/
-	/*
-     $sql = 'with pers_wk as ' .
-       '(select t2.cc2_id, tp.ist_vpi ' .
-       'from  (wk_cc1 t1 join wk_cc2 t2 on t1.cc1_id = t2.cc1_id) left join wk_personal tp on t2.cc2_id = tp.wk_id ' .
-       "where tp.user_id = $userId) " .
-       'select cc1, cc2, cc2_bezeichnung, cc2_vpi, coalesce(tp.ist_vpi,cc2_vpi) val, nvl2(ist_vpi,1,0) user_def ' .
-       'from (wk_cc1 t1 join wk_cc2 t2 on t1.cc1_id = t2.cc1_id) left join pers_wk tp on t2.cc2_id = tp.cc2_id ' .
-        "where t1.cc1 = $cc1 order by cc1, cc2";
- */
-    $sql = 
-      'select cc1, cc2, cc2_bezeichnung, cc2_vpi, coalesce(ist_vpi,cc2_vpi) val, nvl2(ist_vpi,1,0) user_def '.
-      "from (wk_cc1 t1 join wk_cc2 t2 on t1.cc1_id = t2.cc1_id) left join wk_personal tp on t2.cc2_id = tp.wk_id and user_id = $userId " .
-      "where t1.cc1 = $cc1 " .
-      'order by cc1, cc2';
-	 
+	function __construct()
+	{
+	   $this->logger = Zend_Registry::get('logger');
+	   $this->db = Zend_Registry::get('db');
+	   $this->pkg = Zend_Registry::get('pkg', $pkg);
+	   $this->logger->debug( '-- Default_Model_CC2->__construct()');
+	} // __construct
+
+    
+	public function fetchAll($userId, $cc1)
+	{
+	   $this->logger = Zend_Registry::get('logger');
+	   $this->logger->info( "-> Default_Model_CC2->fetchAll() - userId = $userId cc1 = $cc1");
+	
+       $sql = 'select cc1, cc2, cc2_bezeichnung, cc2_vpi, val, user_def  ' .
+		       "from table($this->pkg.fetch_cc2(p_userid => $userId, p_cc1 => $cc1 ))" ;
  
-       $logger->debug( ' sql = ' . $sql);
+       $this->logger->debug( ' sql = ' . $sql);
 	   
 	   $db = Zend_Registry::Get('db');
 	   $result = $db->fetchAll($sql);
 		
-	   $logger->debug( ' result ' . var_export($result,true));
-	   $logger->info( '<- Default_Model_CC2->fetchAll()');
+	   $this->logger->debug( ' result ' . var_export($result,true));
+	   $this->logger->info( '<- Default_Model_CC2->fetchAll()');
 	   return $result;
-	}
+	} // fetchAll
+	
+	public function insertOrUpdate($val, $userId, $cc1, $cc2)
+	{
+	   $this->logger = Zend_Registry::get('logger');
+	   $this->logger->info( "-> Default_Model_CC2->insertOrUpdate() - userId = $userId cc1 = $cc1 val = $val");
+	   $val = str_replace(',','.',$val);
+	   //$sql = "select wk_pkg.ins_or_upd_cc2(p_userid => $userId, p_cc1 => $cc1, p_cc2 => $cc2, p_val => $val) from dual";
+	   $sql = "call $this->pkg.ins_or_upd_cc2(p_userid => $userId, p_cc1 => $cc1, p_cc2 => $cc2, p_val => $val)";
+	   $this->logger->debug( ' sql =  ' . $sql);
+	   $db = Zend_Registry::Get('db');
+	   //$result = $db->fetchAll($sql);
+	   $result = $db->query($sql);
+	   // $logger->debug( ' result =  ' . var_export($result,true));
+	   $this->logger->info( '-> Default_Model_CC2->insertOrUpdate()');
+	   return $result;   
+	} // insertOrUpdate
+	
+	public function delete($userId, $cc1, $cc2)
+	{
+	   $this->logger = Zend_Registry::get('logger');
+	   $this->logger->info( "-> Default_Model_CC2->delete() - userId = $userId cc1 = $cc1 cc2 = $cc2");
+	   // $sql = "select wk_pkg.del_cc2(p_userid => $userId, p_cc1 => $cc1, p_cc2 => $cc2) from dual";
+	   $sql = "call $this->pkg.del_cc2(p_userid => $userId, p_cc1 => $cc1, p_cc2 => $cc2)";
+	   $this->logger->debug( ' sql =  ' . $sql);
+	   $db = Zend_Registry::Get('db');
+	   //$result = $db->fetchAll($sql);
+	   $this->result = $db->query($sql);
+	   $this->logger->info( '-> Default_Model_CC2->delete()'); 
+	} // delete
+	
+	
+	
+	
 }

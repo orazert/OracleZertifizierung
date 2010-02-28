@@ -104,8 +104,6 @@ class AuthController extends Zend_Controller_Action
 	    $logger->info( '-> AuthController->createAction()');
 		
 		$this->view->message = '';
-		
-		$this->view->message = '';
         if ($this->_request->isPost()) {
 		// collect the data from the user
             Zend_Loader::loadClass('Zend_Filter_StripTags');
