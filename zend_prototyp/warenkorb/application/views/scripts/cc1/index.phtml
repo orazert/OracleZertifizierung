@@ -2,11 +2,12 @@
 	 require_once ( APPLICATION_PATH . '\wk_util\wk_util.php');
 	 
 	 $url1 = $this->url(array('controller'=>'cc1','action' => 'index'), 'default', true);
+	 print '<div class="divcenter">';
 	 print '<h2>Persönlicher Warenkorb </h2>';
-	 print '<h3>[<a href="' . $url1 . '">'. WK_TXT_CC1 . '</a>]</h3>';
+	 print '<h3 >[<a href="' . $url1 . '">'. WK_TXT_CC1 . '</a>]</h3>';
 	 $corr = $this->entries['CORR'];
 	 print '<h3>Korrelation: ' . $this->escape(wk_number_format($corr,2)) . '% </h3>';
-	 print '<table border=1>';
+	 print '<table border="1" align="center">';
 	 print '<tr><th>CC1</th><th>Bezeichnung</th><th>VPI</th><th>PVPI</th></tr>';
 	 $data = $this->entries['DATA'];
 	 foreach ($data as $entry) {
@@ -20,26 +21,26 @@
 		$url = $this->url(array('controller'=>'cc2','action' => 'index', 'cc1' => $cc1), 'default', true);
 	    print '<tr>';
 		if ($userDef === WK_VAL_DIFF_ROW) {
-		  print '<td><font color="red"><b>' . $this->escape($cc1) . '</b></font></td>';
+		  print '<td>' . $this->escape($cc1) . '</td>';
 		} else {
 		   print '<td>' . $this->escape($cc1) . '</td>';
 		}
 		if ($userDef === WK_VAL_DIFF_ROW) {
-		    print  '<td><font color="red"><b>' . $this->escape($bezeichnung) . '</b></font></td>'; 
+		    print  '<td class="tdleft">' . $this->escape($bezeichnung) . '</td>'; 
 		} else {
-		    print  '<td><a href="' . $url .     '">' . $this->escape($bezeichnung) .'</a>' . '</td>'; 
+		    print  '<td class="tdleft"><a href="' . $url .     '" >' . $this->escape($bezeichnung) .'</a>' . '</td>'; 
 		}
 		if ($userDef === WK_VAL_DIFF_ROW) {
-		    print '<td align ="right"><font color="red"><b>' . $this->escape(wk_number_format($vpi)) . '</b></font></td>';
+		    print '<td align ="right" >' . $this->escape(wk_number_format($vpi)) . '</td>';
 		} else {
 		    print '<td align ="right">' . $this->escape(wk_number_format($vpi)) . '</td>';
 		}
 		$url = $this->url(array('controller'=>'cc1','action' => 'edit', 'cc1' => $cc1, 
 		                  'userdef' => $userDef, 'val' => $db_val), 'default', true);
 		if ($userDef === WK_VAL_USER) {
-		     print  '<td align ="right"><a href="' . $url . '"><font color="blue"><b>' . $this->escape($val) .'</b></font></a></td>'; 
+		     print  '<td align ="right" ><a href="' . $url . '"><font color="blue"><b>' . $this->escape($val) .'</b></font></a></td>'; 
 	    } elseif ( $userDef === WK_VAL_DEFAULT ) {
-			 print  '<td align ="right"><a href="' . $url . '"><font color="black">' . $this->escape($val) .'</font></a></td>'; 
+			 print  '<td align ="right" ><a href="' . $url . '">' . $this->escape($val) .'</a></td>'; 
 		} elseif ($userDef === WK_VAL_NOT_EDITABLE) {
 		     print  '<td align ="right"><b>' . $this->escape($val) . '</b></td>'; 
 	    } elseif ($userDef === WK_VAL_DIFF_ROW) {
@@ -50,6 +51,6 @@
 	  print '</table>';
 	  print '<br>';
 	  $url2 = $this->url(array('controller'=>'cc1','action' => 'display'), 'default', true);
-	  print '<a href="' . $url2 . '">Alle Gruppen und Waren mit geänderten PVPI Werten anzeigen.</a>';
-	
+	  print 'Alle Gruppen und Waren mit geänderten PVPI Werten anzeigen, <a href="' . $url2 . '" style="color:blue; font-weight:bold;">hier klicken</a>';
+		print '</div>';
 	?>
