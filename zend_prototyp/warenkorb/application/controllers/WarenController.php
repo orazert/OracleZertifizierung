@@ -37,7 +37,7 @@ class WarenController extends Zend_Controller_Action
         $cc1 = $request->getParam('cc1');
 		$cc2 = $request->getParam('cc2');
 		$cc3 = $request->getParam('cc3');
-        $this->logger->info( '-> WarenController->indexAction() RequestParam cc1 = $cc1 cc2 = $cc2 cc3 = $cc3');
+        $this->logger->info( "-> WarenController->indexAction() RequestParam cc1 = $cc1 cc2 = $cc2 cc3 = $cc3");
         	   
         $mod = new Default_Model_Waren();
         	   
@@ -62,6 +62,7 @@ class WarenController extends Zend_Controller_Action
 		$id = $request->getParam('id');
 		$warencode = $request->getParam('warencode');
 	    $userDef = $request->getParam('userdef');
+		$val = $request->getParam('val');
 		
 		$this->logger->debug( 'request\n' . var_export($_REQUEST,true));
         
@@ -75,26 +76,25 @@ class WarenController extends Zend_Controller_Action
 			   $val = $request->getParam('newval');	
                $msg = wk_check_number($val);				   
 			    if (isset($msg)) {
-			        $data = array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'id' => $id, 'warencode' => $warencode,'userdef' => $userDef );
-			        $this->view->entries = $data;
 			        $this->view->message = $msg;
 		        } else { // insert or update		 		 
 			        $mod = new Default_Model_Waren();
-                    //$data = $mod->insertOrUpdate($val,$this->userId,$cc1,$cc2,$cc3,$warencode);
 					$data = $mod->insertOrUpdate_1($val,$this->userId,$id);
 		            $this->_redirect("waren/index/cc1/$cc1/cc2/$cc2/cc3/$cc3");
 		       }
 		   } elseif (!empty($reset)) { //reset to default value
 		      $mod = new Default_Model_Waren();
-              //$data = $mod->delete($this->userId,$cc1,$cc2,$cc3,$warencode);
 			  $data = $mod->delete_1($this->userId,$id);
 		      $this->_redirect("waren/index/cc1/$cc1/cc2/$cc2/cc3/$cc3");
 		   }
 		} else {	
-		    $data = array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'id' => $id, 'warencode' => $warencode, 'userdef' => $userDef );
-		    $this->view->entries = $data;		
+		    //$data = array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'id' => $id, 'warencode' => $warencode, 'userdef' => $userDef );
+		    //$this->view->entries = $data;		
 		} 
-		$this->view->title = "Wert ändern";
+		$this->view->title = "PVPI-Wert ändern";
+		$this->view->entries = 
+		    array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'id' => $id, 'warencode' => $warencode, 'userdef' => $userDef, 'val' => $val,
+			      'ONLOAD' => 'javascript: this.document.editform.newval.focus();');
         $this->render();
 		$this->logger->info( '<- WarenController->editAction()');
     } // editAction

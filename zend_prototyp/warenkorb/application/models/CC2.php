@@ -64,7 +64,18 @@ class Default_Model_CC2
 	   $this->logger->info( '-> Default_Model_CC2->delete()'); 
 	} // delete
 	
-	
+	public function hasPersSubValues($userId,$cc1, $cc2)
+	{
+	  $this->logger->info( "-> Default_Model_CC2->hasPersSubValues() - - userId = $userId cc1 = $cc1");
+	  //$sql = "select count(*) result from table($this->pkg.has_pers_val_cc2(p_userid => $userId, p_cc1 => $cc1, p_cc2 => $cc2))";
+	  $sql = "select * from table($this->pkg.has_pers_val_cc2(p_userid => $userId, p_cc1 => $cc1, p_cc2 => $cc2))";
+	  $this->logger->debug( ' sql =  ' . $sql);
+	  $result = $this->db->fetchAll($sql);
+	  //$res = $result[0]['RESULT'];
+	  //$this->logger->debug( " res = $result");
+	  $this->logger->info( '-> Default_Model_CC2->hasPersSubValues()'); 
+	  return $result;
+	} // hasPersSubValues
 	
 	
 }

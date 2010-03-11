@@ -41,8 +41,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $db = Zend_Db::factory('oracle', $params);
         Zend_Db_Table_Abstract::setDefaultAdapter($db);
 		Zend_Registry::set('db', $db);
-
-
+         
+		// correlation
+		$corrFct = $config->corr->fct;
+        $corrData = $config->corr->data;
+		Zend_Registry::set('corrFct', $corrFct);
+		Zend_Registry::set('corrData', $corrData);
+		$logger->debug("Zend_Application_Bootstrap_Bootstrap->_initAutoload() Corr: corrFct = $corrFct, corrData = $corrData");
+		
         $autoloader = new Zend_Application_Module_Autoloader(array(
             'namespace' => 'Default',
             'basePath'  => dirname(__FILE__),

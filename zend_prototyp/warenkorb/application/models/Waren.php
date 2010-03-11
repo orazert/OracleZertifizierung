@@ -7,12 +7,16 @@ class Default_Model_Waren
     private $logger = null;
 	private $db = null;
 	private $pkg = null;
+	private $corrFct = null;
+	private $corrData = null; 	
 	
 	function __construct()
 	{
 	   $this->logger = Zend_Registry::get('logger');
 	   $this->db = Zend_Registry::get('db');
 	   $this->pkg = Zend_Registry::get('pkg', $pkg);
+	   $this->corrFct = Zend_Registry::get('corrFct');
+	   $this->corrData = Zend_Registry::get('corrData');
 	   $this->logger->debug( '-- Default_Model_Waren->__construct()');
 	} // __construct
 	
@@ -82,12 +86,13 @@ class Default_Model_Waren
 	public function getCorr($userId)
 	{
 	   $this->logger->info( "-> Default_Model_Waren->getCorr() - userId = $userId");
-	   $sql = 'select corr(wc_vpi,val) as CORR ' . "from table($this->pkg.fetch_alle_waren(p_userid => $userId))" ;
+	   //$sql = 'select 100 * abs(corr(wc_vpi,val)) as CORR ' . "from table($this->pkg.fetch_alle_waren(p_userid => $userId))" ;
+	   $sql = 'select ' . $this->corrFct . ' as CORR ' . "from table($this->pkg.$this->corrData(p_userid => $userId))" ;
 	   $this->logger->debug( ' sql =  ' . $sql);
 	   $result = $this->db->fetchAll($sql);
 	   //$this->logger->debug( ' result ' . var_export($result,true));
 	   $corr = $result[0]['CORR'];
-	   $this->logger->debug( " corr = $corr");
+	   $this->logger->info( " corr = $corr");
 	   $this->logger->info( '-> Default_Model_Waren->getCorr()'); 
 	   return $corr;
 	} // getCorr

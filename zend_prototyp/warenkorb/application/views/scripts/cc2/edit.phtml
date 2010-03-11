@@ -1,5 +1,5 @@
 
-<h1><?php echo $this->escape($this->title); ?></h1>
+<h2><?php echo $this->escape($this->title); ?></h2>
 
 <?php if(!empty($this->message)) :?>
 <div id="message">
@@ -7,13 +7,18 @@
 </div>
 <?php endif; ?>
 
-<form action="<?php echo $this->baseUrl ?>/cc2/edit" method="post">
+<form name="editform" action="<?php echo $this->baseUrl ?>/cc2/edit" method="post">
 <div>
-    <label for="newval">Wert</label>
-    <input type="text" name="newval" value=""/>
+ <table border=1>
+ <tr>    
+    <td><label for="newval">Neuer PVPI Wert</label></td>
+    <td><input type="text" name="newval" value="<?php echo $this->entries['val'] ?>"/></td>
+</tr>
+</table>
 	<input type="hidden" name="cc1" value="<?php echo $this->entries['cc1'] ?>"  />
 	<input type="hidden" name="cc2" value="<?php echo $this->entries['cc2'] ?>"  />
 	<input type="hidden" name="userdef" value="<?php echo $this->entries['userdef'] ?>"  />
+	<input type="hidden" name="perssubval" value="<?php echo $this->entries['perssubval'] ?>"  />
 </div>
 <br>
 <div id="formbutton">
@@ -24,4 +29,39 @@
 <input type="submit" name="cancel" value="Abbrechen" />
 </div>
 </form>
+<div>
+<?php
+	$data = $this->entries['DATA'];
+	if (is_array($data) and array_key_exists(0,$data)) {
+	  print '<br>';
+	  print '<font color="red">
+	         Wenn Sie diesen Wert speichern werden die PVPI Werte der<br>
+			 folgenden Gruppen und Waren auf den Defaultwert gesetzt !
+			 </font>';
+	  //print 'Alle Gruppen und  Waren mit geänderten PVPI Werten';
+	  print '<br><br>';
+	  print '<table border=1>';
+	  print '<tr><th>CC1</th><th>CC2</th><th>CC3</th><th>WCode</th><th>Bezeichnung</th><th>PVPI</th></tr>';
+	  foreach ($data as $entry) {
+	    $cc1 = $entry['CC1'];
+		$cc2 = $entry['CC2'];
+		$cc3 =  $entry['CC3'];
+		$warencode = $entry['WARENCODE'];
+		$bezeichnung = $entry['BEZ'];
+		$pvpi = $entry['IST_VPI'];
+		$pvpi = wk_number_format($pvpi);
+		print '<tr>';
+		print '<td>' . $this->escape($cc1) . '</td>';
+		print '<td>' . $this->escape($cc2) . '</td>';
+		print '<td>' . $this->escape($cc3) . '</td>';
+		print '<td>' . $this->escape($warencode) . '</td>';
+		print  '<td>' . $this->escape($bezeichnung) . '</td>'; 
+		print '<td align ="right">' . $this->escape(wk_number_format($pvpi)) . '</td>';
+	    print '</tr>';
+	  } 
+	  print '</table>';
+	}
+?>
+</div>
+
 

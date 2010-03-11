@@ -19,7 +19,6 @@ class Default_Model_CC1
 	public function fetchAll($userId)
 	{
 	   $this->logger->info( '-> Default_Model_CC1->fetch() - userId = ' . $userId); 
-  	   //$pack = $this->pkg;
 	   $sql = 'select cc1, cc1_bezeichnung, cc1_vpi, val, user_def ' .
 		       "from table($this->pkg.fetch_cc1(p_userid => $userId))" ;
 	   $this->logger->debug( ' sql =  ' . $sql);
@@ -61,5 +60,40 @@ class Default_Model_CC1
 	   $this->logger->info( '-> Default_Model_CC1->getCorr()'); 
 	   return $corr;
 	} // getCorr
+	
+	public function hasPersSubValues($userId,$cc1)
+	{
+	  $this->logger->info( "-> Default_Model_CC1->hasPersSubValues() - - userId = $userId cc1 = $cc1");
+	  //$sql = "select count(*) result from table($this->pkg.has_pers_val_cc1(p_userid => $userId, p_cc1 => $cc1))";
+	  $sql = "select * from table($this->pkg.has_pers_val_cc1(p_userid => $userId, p_cc1 => $cc1))";
+	  $this->logger->debug( ' sql =  ' . $sql);
+	  $result = $this->db->fetchAll($sql);
+	  //$res = $result[0]['RESULT'];
+	  //$this->logger->debug( " res = $result");
+	  $this->logger->info( '-> Default_Model_CC1->hasPersSubValues()'); 
+	  return $result;
+	} // hasPersSubValues
+	
+    public function getPvpiList($userId)
+	{
+	  $this->logger->info( "-> Default_Model_CC1->getPvpiList() - userId = $userId");
+	  $sql = "select * from table($this->pkg.has_pers_val(p_userid => $userId))";
+	  $this->logger->debug( ' sql =  ' . $sql);
+	  $result = $this->db->fetchAll($sql);
+	  $this->logger->debug( ' result ' . var_export($result,true));
+	  $this->logger->info( '-> Default_Model_CC1->getPvpiList)'); 
+	  return $result;
+	} // hasPersSubValues
+	
+	public function deleteFromWKPers($userid,$wpid)
+	{
+	    $this->logger->info( "-> Default_Model_CC1->deleteFromWKPers() - userId = $userId wpid = $wpid");
+		$sql = "delete from wk_personal where user_id = $userid and wp_id = $wpid";
+		$this->logger->debug( ' sql =  ' . $sql);
+		$result = $this->db->query($sql);
+		$this->logger->info( "<- Default_Model_CC1->deleteFromWKPers()");
+		return result;
+	} //  deleteFromWKPers
+	
 	
 }

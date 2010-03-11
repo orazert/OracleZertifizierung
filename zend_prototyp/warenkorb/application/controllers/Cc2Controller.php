@@ -5,38 +5,37 @@ class Cc2Controller extends Zend_Controller_Action
 {
 
     private $userId = null;
+	private $logger = null;
 
     public function init()
     {
-        $logger = Zend_Registry::get('logger');
-        $logger->info( '-- Cc2Controller->init()');
+        $this->logger = Zend_Registry::get('logger');
+        $this->logger->info( '-- Cc2Controller->init()');
 		$this->view->baseUrl = $this->_request->getBaseUrl();	   
     } // init
 
     public function preDispatch()
     {
-        $logger = Zend_Registry::get('logger');
-        $logger->info( '-> Cc2Controller->preDispatch()');
+        $this->logger->info( '-> Cc2Controller->preDispatch()');
         	   
         $auth = Zend_Auth::getInstance();
         $isLoggedIn = $auth->hasIdentity();
-        $logger->debug( "** Cc2Controller->preDispatch() isLoggedIn = $isLoggedIn");
+        $this->logger->debug( "** Cc2Controller->preDispatch() isLoggedIn = $isLoggedIn");
         if ( !$isLoggedIn) {
         	    $this->_redirect('auth/login');
         } 
         $this->userId = $auth->getIdentity()->USER_ID;
-        $logger->info( '<- Cc2Controller->preDispatch()');
+        $this->logger->info( '<- Cc2Controller->preDispatch()');
     } // preDispatch
 
     public function indexAction()
     {
-        $logger = Zend_Registry::get('logger');
-		$logger->info( '-> Cc2Controller->indexAction()');
+		$this->logger->info( '-> Cc2Controller->indexAction()');
         	   
         $request = $this->getRequest();
-        //$logger->debug( 'request\n' . var_export($request,true));
+        //$this->logger->debug( 'request\n' . var_export($request,true));
         $cc1 = $request->getParam('cc1');
-        $logger->info( '-> Cc2Controller->indexAction() RequestParam(cc1) = ' . $cc1);
+        $this->logger->info( '-> Cc2Controller->indexAction() RequestParam(cc1) = ' . $cc1);
         	   
         $mod = new Default_Model_CC2();
         	   
@@ -47,13 +46,12 @@ class Cc2Controller extends Zend_Controller_Action
         $this->view->entries = array('DATA' => $data , 'LINK' => $link, 'CORR' =>  $corr);
 
         	   
-        $logger->info( '<- Cc2Controller->indexAction()');
+        $this->logger->info( '<- Cc2Controller->indexAction()');
     } // indexAction
 	
     public function editAction()
     {
-        $logger = Zend_Registry::get('logger');
-	    $logger->info( '-> Cc2Controller->editAction()');
+	    $this->logger->info( '-> Cc2Controller->editAction()');
 		
 		$this->view->message = '';
 		
@@ -61,8 +59,9 @@ class Cc2Controller extends Zend_Controller_Action
 		$cc1 = $request->getParam('cc1');
 		$cc2 = $request->getParam('cc2');
 	    $userDef = $request->getParam('userdef');
-		
-		$logger->debug( 'request\n' . var_export($_REQUEST,true));
+		$perssubval = $request->getParam('perssubval');
+		$val = $request->getParam('val');
+		$this->logger->debug( 'request\n' . var_export($_REQUEST,true));
         
 		if ($this->_request->isPost()) {
 			$reset = $request->getParam('reset');
@@ -74,8 +73,6 @@ class Cc2Controller extends Zend_Controller_Action
 			   $val = $request->getParam('newval');
                 $msg = wk_check_number($val);			   
 			    if (isset($msg)) {
-			        $data = array('cc1' => $cc1, 'cc2' => $cc2, 'userdef' => $userDef );
-			        $this->view->entries = $data;
 			        $this->view->message = $msg;
 		        } else { // insert or update		 		 
 			        $mod = new Default_Model_CC2();
@@ -87,13 +84,16 @@ class Cc2Controller extends Zend_Controller_Action
               $data = $mod->delete($this->userId,$cc1,$cc2);
 		      $this->_redirect("cc2/index/cc1/$cc1");
 		   }
-		} else {	
-		    $data = array('cc1' => $cc1, 'cc2' => $cc2, 'userdef' => $userDef );
-		    $this->view->entries = $data;		
+		} else {
+            $mod = new Default_Model_CC2();
+			$perssubval = $mod->hasPersSubValues($this->userId,$cc1,$cc2);			
 		} 
-		$this->view->title = "Wert ändern";
+		$this->view->title = "PVPI-Wert ändern";
+		$this->view->entries = 
+		    array('cc1' => $cc1, 'cc2' => $cc2, 'userdef' => $userDef, 'DATA' => $perssubval, 'val' => $val,
+			      'ONLOAD' => 'javascript: this.document.editform.newval.focus();');
         $this->render();
-		$logger->info( '<- Cc2Controller->editAction()');
+		$this->logger->info( '<- Cc2Controller->editAction()');
     } // editAction
 
 }

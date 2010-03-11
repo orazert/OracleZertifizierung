@@ -28,18 +28,17 @@ $userName = $auth->getIdentity()->USER_NAME;
 	<?php endif ?>
 	
     <div id="header-navigation" style="float: right">
-	    <?php if ($isLoggedIn) :  ?>
-            <a href="<?php echo $this->url(array('controller'=>'auth','action' => 'logout'), 'default', true) ?>">
-			<font color='green'>Abmelden</font></a>
-		<?php elseif (is_array($this->entries) and array_key_exists('LOGIN',$this->entries)) : ?>
-		  <a href="<?php echo $this->url(array('controller'=>'auth','action' => 'create'),'default',true) ?>">
-		  <font color='red'>Neuen Benutzer registrieren</font></a>
-	    <?php elseif (is_array($this->entries) and array_key_exists('CREATE',$this->entries)) : ?>	
-	      <a href="<?php echo $this->url(array('controller'=>'auth','action' => 'login'), 'default', true) ?>">
-		  <font color='red'>Anmelden</font></a>	
-	    <?php elseif (is_array($this->entries) and array_key_exists('HELP',$this->entries)) : ?>	
-	      <a href="<?php echo $this->url(array('controller'=>'auth','action' => 'login'), 'default', true) ?>">
-		  <font color='red'>Anmelden</font></a>	
+	    <?php 
+	      if ($isLoggedIn) :  ?>
+            <a href="<?php echo $this->url(
+            array('controller'=>'auth','action' => 'logout'), 
+            'default', 
+            true) ?>"><font color='green'>Abmelden</font></a>
+		<?php else : ?>
+		<a href="<?php echo $this->url(
+            array('controller'=>'auth','action' => 'create'), 
+            'default', 
+            true) ?>"><font color='red'>Neuen Benutzer registrieren</font></a>
 		<?php endif ?>
     </div>
 </div>

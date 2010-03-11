@@ -15,6 +15,8 @@
         <controllerFile controllerName="cc1">
           <actionMethod actionName="index"/>
           <actionMethod actionName="edit"/>
+          <actionMethod actionName="display"/>
+          <actionMethod actionName="reset"/>
         </controllerFile>
         <controllerFile controllerName="auth">
           <actionMethod actionName="index"/>
@@ -81,6 +83,12 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="waren">
             <viewScriptFile forActionName="edit"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="cc1">
+            <viewScriptFile forActionName="display"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="cc1">
+            <viewScriptFile forActionName="reset"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

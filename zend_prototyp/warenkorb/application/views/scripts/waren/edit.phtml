@@ -1,5 +1,5 @@
 
-<h1><?php echo $this->escape($this->title); ?></h1>
+<h2><?php echo $this->escape($this->title); ?></h2>
 
 <?php if(!empty($this->message)) :?>
 <div id="message">
@@ -7,10 +7,14 @@
 </div>
 <?php endif; ?>
 
-<form action="<?php echo $this->baseUrl ?>/waren/edit" method="post">
+<form name="editform" action="<?php echo $this->baseUrl ?>/waren/edit" method="post">
 <div>
-    <label for="newval">Wert</label>
-    <input type="text" name="newval" value=""/>
+ <table border=1>
+ <tr>    
+    <td><label for="newval">Neuer PVPI Wert</label></td>
+    <td><input type="text" name="newval" value="<?php echo $this->entries['val'] ?>"/></td>
+</tr>
+</table>
 	<input type="hidden" name="cc1" value="<?php echo $this->entries['cc1'] ?>"  />
 	<input type="hidden" name="cc2" value="<?php echo $this->entries['cc2'] ?>"  />
 	<input type="hidden" name="cc3" value="<?php echo $this->entries['cc3'] ?>"  />

@@ -36,7 +36,7 @@ class Cc3Controller extends Zend_Controller_Action
         // $this->logger->debug( 'request\n' . var_export($request,true));
         $cc1 = $request->getParam('cc1');
 		$cc2 = $request->getParam('cc2');
-        $this->logger->info( '-> Cc3Controller->indexAction() RequestParam cc1 = $cc1 cc2 = $cc2');
+        $this->logger->info( "-> Cc3Controller->indexAction() RequestParam cc1 = $cc1 cc2 = $cc2");
         	   
         $mod = new Default_Model_CC3();
         	   
@@ -61,7 +61,8 @@ class Cc3Controller extends Zend_Controller_Action
 		$cc2 = $request->getParam('cc2');
 		$cc3 = $request->getParam('cc3');
 	    $userDef = $request->getParam('userdef');
-		
+		$perssubval = $request->getParam('perssubval');
+		$val = $request->getParam('val');
 		$this->logger->debug( 'request\n' . var_export($_REQUEST,true));
         
 		if ($this->_request->isPost()) {
@@ -74,8 +75,8 @@ class Cc3Controller extends Zend_Controller_Action
 			   $val = $request->getParam('newval');	
 			    $msg = wk_check_number($val);
 			    if (isset($msg)) {
-			        $data = array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'userdef' => $userDef );
-			        $this->view->entries = $data;
+			        //$data = array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'userdef' => $userDef, 'perssubval' => $perssubval );
+			        //$this->view->entries = $data;
 			        $this->view->message = $msg;
 		        } else { // insert or update		 		 
 			        $mod = new Default_Model_CC3();
@@ -87,11 +88,16 @@ class Cc3Controller extends Zend_Controller_Action
               $data = $mod->delete($this->userId,$cc1,$cc2,$cc3);
 		      $this->_redirect("cc3/index/cc1/$cc1/cc2/$cc2");
 		   }
-		} else {	
-		    $data = array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'userdef' => $userDef );
-		    $this->view->entries = $data;		
+		} else {
+            $mod = new Default_Model_CC3();
+			$perssubval = $mod->hasPersSubValues($this->userId,$cc1,$cc2,$cc3);				
+		    //$data = array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'userdef' => $userDef, 'perssubval' => $perssubval );
+		    //$this->view->entries = $data;		
 		} 
-		$this->view->title = "Wert ändern";
+		$this->view->title = "PVPI-Wert ändern";
+		$this->view->entries =
+		     array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'userdef' => $userDef, 'DATA' => $perssubval, 'val' => $val,
+			       'ONLOAD' => 'javascript: this.document.editform.newval.focus();');
         $this->render();
 		$this->logger->info( '<- Cc3Controller->editAction()');
     } // editAction

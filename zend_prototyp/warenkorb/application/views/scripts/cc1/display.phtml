@@ -1,0 +1,45 @@
+<?php 
+     require_once ( APPLICATION_PATH . '\wk_util\wk_util.php');
+	 
+	 print '<h2>Persönlicher Warenkorb </h2>';
+	
+	 $data = $this->entries['DATA'];
+	 
+	if (is_array($data) and array_key_exists(0,$data)) {
+	  print '<form name="displaform" action="' . $this->baseUrl . '/cc1/reset" method="post">';
+	  print '<h3>Alle Gruppen und  Waren mit geänderten PVPI Werten</h3>';
+	  print '<table border=1>';
+	  print '<tr><th>CC1</th><th>CC2</th><th>CC3</th><th>WCode</th><th>Bezeichnung</th><th>PVPI</th><th>Rücksetzen</th></tr>';
+	  foreach ($data as $entry) {
+	    $cc1 = $entry['CC1'];
+		$cc2 = $entry['CC2'];
+		$cc3 =  $entry['CC3'];
+		$warencode = $entry['WARENCODE'];
+		$bezeichnung = $entry['BEZ'];
+		$pvpi = $entry['IST_VPI'];
+		$wpid = $entry['WP_ID'];
+		$pvpi = wk_number_format($pvpi);
+		print '<tr>';
+		print '<td>' . $this->escape($cc1) . '</td>';
+		print '<td>' . $this->escape($cc2) . '</td>';
+		print '<td>' . $this->escape($cc3) . '</td>';
+		print '<td>' . $this->escape($warencode) . '</td>';
+		print  '<td>' . $this->escape($bezeichnung) . '</td>'; 
+		print '<td align ="right">' . $this->escape(wk_number_format($pvpi)) . '</td>';
+		print  '<td align ="center"><input type="checkbox" name="WPID_' . $wpid . '" value="' .$wpid . '"/></td>';
+	    print '</tr>';
+	  } 
+	  print '</table>';
+	  print '<br>';
+	  print '<input type="submit" name="reset" value="Rücksetzen" />';
+	  print '</form>';
+	  print '<br>';
+	  } else {
+	   print '<br>';
+	   print '<h3><font color="red">Sie haben keine PVPI Werte geändert!</font></h3>';
+	  }
+	 
+	  $url2 = $this->url(array('controller'=>'cc1','action' => 'index'), 'default', true);
+	  print '<a href="' . $url2 . '">' . 'Zurück  zu ' . WK_TXT_CC1 . '</a>';
+	  
+?>

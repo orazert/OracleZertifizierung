@@ -31,8 +31,9 @@ class Cc1Controller extends Zend_Controller_Action
         $this->logger->info( '-> Cc1Controller->indexAction()');
         $cc1 = new Default_Model_CC1();
         $data = $cc1->fetchAll($this->userId);
+		//$corr1 = $cc1->getCorr($this->userId);
 		$waren = new Default_Model_Waren();
-		$corr = $waren->getCorr($this->userId);;  
+		$corr = $waren->getCorr($this->userId); 
         $this->view->entries = array('DATA' => $data ,'CORR' =>  $corr);
      
         $this->logger->info( '<- Cc1Controller->indexAction()');
@@ -44,7 +45,9 @@ class Cc1Controller extends Zend_Controller_Action
 		$this->view->message = '';
 		$request = $this->getRequest();
 		$cc1 = $request->getParam('cc1');
-	    $userDef = $request->getParam('userdef');		
+	    $userDef = $request->getParam('userdef');
+        $perssubval = $request->getParam('perssubval');
+		$val = $request->getParam('val');
 		$this->logger->debug( 'request\n' . var_export($_REQUEST,true));     
 		if ($this->_request->isPost()) {
 			$reset = $request->getParam('reset');
@@ -56,9 +59,6 @@ class Cc1Controller extends Zend_Controller_Action
 			    $val = $request->getParam('newval');
                 $msg = wk_check_number($val);			
 			    if (isset($msg)) {
-			        $data = array('cc1' => $cc1, 'userdef' => $userDef );
-			        $this->view->entries = $data;
-			        $this->view->message = 'Bitte einen Wert eingeben.';
 					 $this->view->message = $msg;
 		        } else { // insert or update		 		 
 			        $mod = new Default_Model_CC1();
@@ -71,15 +71,46 @@ class Cc1Controller extends Zend_Controller_Action
 		      $this->_redirect('cc1/index');
 		   }
 		} else {	
-		    $data = array('cc1' => $cc1, 'userdef' => $userDef );
-		    $this->view->entries = $data;		
+		    $mod = new Default_Model_CC1();
+			$perssubval = $mod->hasPersSubValues($this->userId,$cc1);	
 		} 
-		$this->view->title = "Wert ändern";
+		$this->view->title = "PVPI-Wert ändern";
+		$this->view->entries = 
+		    array('cc1' => $cc1, 'userdef' => $userDef, 'DATA' => $perssubval, 'val' => $val,
+		         'ONLOAD' => 'javascript: this.document.editform.newval.focus();');
         $this->render();
 		$this->logger->info( '<- Cc1Controller->editAction()');
     } // editAction
-
-
+     
+    public function displayAction()
+    {
+	    $this->logger->info( '-> Cc1Controller->displayAction()');
+        $mod = new Default_Model_CC1();
+        $data = $mod->getPvpiList($this->userId);
+        $this->view->entries = array('DATA' => $data);
+        $this->logger->info( '<- Cc1Controller->displayAction()');
+	}  // displayAction
+	
+	public function resetAction()
+	{
+	    $this->logger->info( '-> Cc1Controller->resetAction()');
+		$this->logger->debug( "request\n" . var_export($_REQUEST,true));
+		if ($this->_request->isPost()) {
+		   $mod = new Default_Model_CC1();
+           $data = $mod->getPvpiList($this->userId);
+		    $request = $this->getRequest();
+		    foreach ($data as $entry) {
+		    $wpid_param = 'WPID_'. $entry['WP_ID'];
+			$wpid_val = $request->getParam($wpid_param);
+			if (isset($wpid_val)) {
+			    $this->logger->debug( "delete  wpid_val = $wpid_val" );
+				$mod->deleteFromWKPers($this->userId,$wpid_val);
+		    }
+		  }
+		}
+		$this->_redirect('cc1/display');
+		$this->logger->info( '<- Cc1Controller->resetAction()');
+	} //  resetAction
 }
 
 

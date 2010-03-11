@@ -1,4 +1,5 @@
 <?php
+require_once ( APPLICATION_PATH . '\wk_util\wk_util.php');
 
 class AuthController extends Zend_Controller_Action
 {
@@ -37,13 +38,13 @@ class AuthController extends Zend_Controller_Action
         $this->_redirect('/');
     }
 	
-
     function loginAction()
     {
         $logger = Zend_Registry::get('logger');
 	    $logger->info( '-> AuthController->loginAction()');
 		
 		$this->view->message = '';
+	    
         if ($this->_request->isPost()) {
             // collect the data from the user
             Zend_Loader::loadClass('Zend_Filter_StripTags');
@@ -52,8 +53,10 @@ class AuthController extends Zend_Controller_Action
             $password = $filter->filter($this->_request->getPost('password'));
             $logger->debug( "** AuthController->loginAction() $username/$password");
 			
-            if (empty($username)) {
-                $this->view->message = 'Bitte einen Username eingeben.';
+            if (wk_empty($username) or wk_empty($password)) {
+                $this->view->message = 'Bitte Name und Passwort eingeben.';
+			    $data = array('ONLOAD' => 'this.document.loginform.username.focus();' );
+		        $this->view->entries = $data;	
             } else {
                 // setup Zend_Auth adapter for a database table
                 Zend_Loader::loadClass('Zend_Auth_Adapter_DbTable');
@@ -87,6 +90,7 @@ class AuthController extends Zend_Controller_Action
             }
 		}
         $this->view->title = "Anmelden";
+		$this->view->entries = array('ONLOAD' => 'javascript: this.document.loginform.username.focus();', 'LOGIN' => 'login');
         $this->render();
 		$logger->info( '<- AuthController->loginAction()');
         
@@ -112,8 +116,8 @@ class AuthController extends Zend_Controller_Action
             $password = $filter->filter($this->_request->getPost('password'));
             $logger->debug( "** AuthController->createAction() $username/$password");
 			
-			if (empty($username) or empty($password)  ) {
-                $this->view->message = 'Bitte Username und Password eingeben.';
+			if (wk_empty($username) or wk_empty($password)  ) {
+                $this->view->message = 'Bitte Name und Passwort eingeben.';
 		    } else {
 			// add new user  to database
 				$data = array(
@@ -140,8 +144,18 @@ class AuthController extends Zend_Controller_Action
 		 }
 		}
 		$this->view->title = "Benutzer registrieren";
+		$this->view->entries = array('ONLOAD' => 'javascript: this.document.createform.username.focus();', 'CREATE' => 'create' );
         $this->render();
 		$logger->info( '<- AuthController->createAction()');
 	}
+	
+	public function helpAction()
+    {
+        $logger = Zend_Registry::get('logger');
+	    $logger->info( '-> AuthController->helpAction()');
+		$this->view->entries = array('HELP' => 'help' );
+		$this->render();
+		$logger->info( '<- AuthController->helpAction()');
+    }
   }
 ?>
