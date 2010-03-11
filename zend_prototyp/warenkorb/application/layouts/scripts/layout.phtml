@@ -9,34 +9,50 @@ $userName = $auth->getIdentity()->USER_NAME;
 <head>  
   <meta http-equiv="Content-Type" content="text/html " /> 
   <title>Zend Framework Warenkorb Application</title>
-  <?php echo $this->headLink()->appendStylesheet('/css/global.css') ?>
+  
+  <!--<?php echo $this->headLink()->appendStylesheet('/css/global.css') ?>-->
+  <!--<?php echo $this->headLink()->appendStylesheet(APPLICATION_PATH . '\layouts\warenkorb.css') ?>-->
+	<style type="text/css">
+          body { background-color:#CCFFFF; font-family:Arial,sans-serif; color:#2f4f4f;}
+          p {text-align:left; color:#3333300;}
+          h3 {color:#FE2E2E;}
+          
+          a:link { text-decoration:none;  color:#2f4f4f;}
+          a:visited { text-decoration:none; color:#2f4f4f;}
+          a:hover { text-decoration:underline; background-color:yellow;}
+          a:active { text-decoration:underline; }
+          
+          td.tdleft {text-align:left; font-weight:bold;}
+          div.divcenter {text-align:center; padding:10px; border:thin solid red; margin:25px;}
+  </style>
+
 </head> 
 <?php if (is_array($this->entries) and array_key_exists('ONLOAD',$this->entries)) : ?>
-  <body onload="<?php print $this->entries['ONLOAD'] ?> ">
+  <body  onload="<?php print $this->entries['ONLOAD'] ?> ">
 <?php else : ?>
-<body>
+<body >
 <?php endif; ?>
-<div id="header" style="background-color: #EEEEEE; height: 40px;">
+<div id="header" style="background-color: #FFFF66; height: 20px; margin:25px; margin-top:0px;" >
     <?php  if ($isLoggedIn) :  ?>
 	<div id="header-logo" style="float: left">
         <b><font color='green'> <?php echo "$userName ist angemeldet" ?> </font></b>
     </div>
 	<?php else : ?>
 	<div id="header-logo" style="float: left">
-        <b><font color='red'> Kein Benutzer angemeldet</font></b>
+        <b><font color='red'> Kein Benutzer angemeldet</font>
     </div>
 	<?php endif ?>
 	
     <div id="header-navigation" style="float: right">
 	    <?php if ($isLoggedIn) :  ?>
             <a href="<?php echo $this->url(array('controller'=>'auth','action' => 'logout'), 'default', true) ?>">
-			<font color='green'>Abmelden</font></a>
+			<font color='green'><b>Abmelden</font></a>
 		<?php elseif (is_array($this->entries) and array_key_exists('LOGIN',$this->entries)) : ?>
 		  <a href="<?php echo $this->url(array('controller'=>'auth','action' => 'create'),'default',true) ?>">
-		  <font color='red'>Neuen Benutzer registrieren</font></a>
+		  <font color='red'><b>Neuen Benutzer registrieren</font></a>
 	    <?php elseif (is_array($this->entries) and array_key_exists('CREATE',$this->entries)) : ?>	
 	      <a href="<?php echo $this->url(array('controller'=>'auth','action' => 'login'), 'default', true) ?>">
-		  <font color='red'>Anmelden</font></a>	
+		  <font color='red'><b>Anmelden</font></a>	
 	    <?php elseif (is_array($this->entries) and array_key_exists('HELP',$this->entries)) : ?>	
 	      <a href="<?php echo $this->url(array('controller'=>'auth','action' => 'login'), 'default', true) ?>">
 		  <font color='red'>Anmelden</font></a>	
