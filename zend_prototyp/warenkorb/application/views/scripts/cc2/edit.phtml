@@ -1,4 +1,4 @@
-
+<div class="divcenter">
 <h2><?php echo $this->escape($this->title); ?></h2>
 
 <?php if(!empty($this->message)) :?>
@@ -9,9 +9,9 @@
 
 <form name="editform" action="<?php echo $this->baseUrl ?>/cc2/edit" method="post">
 <div>
- <table border=1>
+ <table border="1" align="center">
  <tr>    
-    <td><label for="newval">Neuer PVPI Wert</label></td>
+    <td class="tdleft"><label for="newval">Neuer PVPI Wert</label></td>
     <td><input type="text" name="newval" value="<?php echo $this->entries['val'] ?>"/></td>
 </tr>
 </table>
@@ -40,7 +40,7 @@
 			 </font>';
 	  //print 'Alle Gruppen und  Waren mit geänderten PVPI Werten';
 	  print '<br><br>';
-	  print '<table border=1>';
+	  print '<table border="1" align="center">';
 	  print '<tr><th>CC1</th><th>CC2</th><th>CC3</th><th>WCode</th><th>Bezeichnung</th><th>PVPI</th></tr>';
 	  foreach ($data as $entry) {
 	    $cc1 = $entry['CC1'];
@@ -63,5 +63,5 @@
 	}
 ?>
 </div>
-
+</div>
 
