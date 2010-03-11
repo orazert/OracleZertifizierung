@@ -1,0 +1,11 @@
+body { background-color:#CCFFFF; font-family:Arial,sans-serif; color:#2f4f4f;}
+p {text-align:left; color:#3333300;}
+h3 {color:#FE2E2E;}
+
+a:link { text-decoration:none;  color:#2f4f4f;}
+a:visited { text-decoration:none; color:#2f4f4f;}
+a:hover { text-decoration:underline; background-color:yellow;}
+a:active { text-decoration:underline; }
+
+td.tdleft {text-align:left; font-weight:bold;}
+div.divcenter {text-align:center; padding:10px; border:thin solid red; margin:25px;}
