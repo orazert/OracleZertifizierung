@@ -1,15 +1,15 @@
-
+<div class="divcenter">
 <h1>Persönlicher Warenkorb</h1>
 
-<p>Mit diesem Programm kann man ermitteln, zu welchem Prozentsatz<br> der eigene Haushalt von der Inflation betroffen ist.<br>
-<p>
+Mit diesem Programm kann man ermitteln, zu welchem Prozentsatz<br> der eigene Haushalt von der Inflation betroffen ist.<br><br>
+
 
 <?php
 $url0 = $this->url(array('controller'=>'auth','action' => 'help'), 'default', true);
-print 'Mehr Informationen zum <a href="' . $url0 . '"><b>Persönlichen Warenkorb<b></a>';
+print '<a href="' . $url0 . '">Mehr Informationen zum Persönlichen Warenkorb</a>';
 ?>
 
-<h2><?php echo $this->escape($this->title); ?></h2>
+<h3><?php echo $this->escape($this->title); ?></h3>
 
 
 <?php if(!empty($this->message)) :?>
@@ -19,12 +19,12 @@ print 'Mehr Informationen zum <a href="' . $url0 . '"><b>Persönlichen Warenkorb<
 <?php endif; ?>
 
 <form name="loginform" action="<?php echo $this->baseUrl ?>/auth/login" method="post">
-<table border=1>
+<table border="1" align="center">
     <tr>
-    <td><label for="username">Name</label></td>
+    <td class="tdleft"><label for="username">Name</label></td>
     <td><input type="text" name="username" value=""/></td>
      </tr><tr>
-    <td><label for="password">Passwort</label></td>
+    <td class="tdleft"><label for="password">Passwort</label></td>
     <td><input type="password" name="password" value=""/></td>
     </tr>
 </table>
@@ -33,4 +33,5 @@ print 'Mehr Informationen zum <a href="' . $url0 . '"><b>Persönlichen Warenkorb<
 <input type="submit" name="login" value="Anmelden" />
 </div>
 </form>
+</div>
 
