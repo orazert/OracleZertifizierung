@@ -1,4 +1,4 @@
-
+<div class="divcenter">
 <h2><?php echo $this->escape($this->title); ?></h2>
 
 <?php if(!empty($this->message)) :?>
@@ -9,9 +9,9 @@
 
 <form name="editform" action="<?php echo $this->baseUrl ?>/waren/edit" method="post">
 <div>
- <table border=1>
+ <table border="1" align="center">
  <tr>    
-    <td><label for="newval">Neuer PVPI Wert</label></td>
+    <td class="tdleft"><label for="newval">Neuer PVPI Wert</label></td>
     <td><input type="text" name="newval" value="<?php echo $this->entries['val'] ?>"/></td>
 </tr>
 </table>
@@ -29,6 +29,6 @@
 <input type="submit" name="reset" value="Rücksetzen" />
 <?php endif ?>
 <input type="submit" name="cancel" value="Abbrechen" />
-</div>
 </form>
-
+</div>
+</div>

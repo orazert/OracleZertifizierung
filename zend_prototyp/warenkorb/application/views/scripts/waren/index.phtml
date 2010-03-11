@@ -7,6 +7,7 @@
 	 $url2 = $this->url(array('controller'=>'cc2','action' => 'index', 'cc1' => $link['CC1']), 'default', true);
      $url3	= $this->url(array('controller'=>'cc3','action' => 'index', 'cc1' => $link['CC1'], 'cc2' => $link['CC2']), 'default', true);
 	 $url4	= $this->url(array('controller'=>'waren','action' => 'index', 'cc1' => $link['CC1'], 'cc2' => $link['CC2'], 'cc3' => $link['CC3']), 'default', true);
+	 print '<div class="divcenter">';
 	 print '<h2>Persönlicher Warenkorb </h2>';
 	 print '<h3>[ <a href="' . $url1 . '">' . WK_TXT_CC1 . '</a> / ';
 	 print '<a href="' . $url2 . '">' . WK_TXT_CC2 . '</a> / ';
@@ -17,7 +18,7 @@
 	 print '<h3>Korrelation: ' . $this->escape(wk_number_format($corr,2)) . '%</h3>';
 	  
 	 $data = $this->entries['DATA'];
-	  print '<table border=1>';
+	  print '<table border="1" align="center">';
 	  print '<tr><th>CC1</th><th>CC2</th><th>CC3</th><th>WCode</th><th>Bezeichnung</th><th>VPI</th><th>PVPI</th></tr>';
 	  foreach ($data as $entry) {
 	    $cc1 = $entry['CC1'];
@@ -36,7 +37,7 @@
 		print '<td>' . $this->escape($cc2) . '</td>';
 		print '<td>' . $this->escape($cc3) . '</td>';
 		print '<td>' . $this->escape($warencode) . '</td>';
-		print  '<td>' . $this->escape($bezeichnung) . '</td>'; 
+		print  '<td class="tdleft">' . $this->escape($bezeichnung) . '</td>'; 
 		print '<td align ="right">' . $this->escape(wk_number_format($vpi)) . '</td>';
 		$url = $this->url(array('controller'=>'waren','action' => 'edit', 'cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 
 		       'id' => $id, 'warencode' => $warencode, 'userdef' => $userDef, 'val' => $db_val), 'default', true);
@@ -50,4 +51,5 @@
 	    print '</tr>';
 	  }
 	  print '</table>';
+	  print '</div>';
 ?>
