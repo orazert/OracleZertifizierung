@@ -1,4 +1,4 @@
-
+<div class="divcenter">
 <h1>Persönlicher Warenkorb</h1>
 
 <h2><?php echo $this->escape($this->title); ?></h2>
@@ -10,14 +10,14 @@
 <?php endif; ?>
 
 <form name="createform" action="<?php echo $this->baseUrl ?>/auth/create" method="post">
-<table border=1>
+<table border="1" align="center">
  <tr>
-    <td><label for="username">Name</label></td>
+    <td class="tdleft"><label for="username">Name</label></td>
     <td><input type="text" name="username" value=""/></td>
 </tr>
 <tr>
-    <td><label for="password">Passwort</label></td>
-    <td><input type="password" name="password" value=""/></td>
+    <td class="tdleft"><label for="password">Passwort</label></td>
+    <td ><input type="password" name="password" value=""/></td>
 </tr>
 </table>
 <br>
@@ -25,4 +25,4 @@
 <input type="submit" name="create" value="Registrieren" />
 </div>
 </form>
-
+</div>
