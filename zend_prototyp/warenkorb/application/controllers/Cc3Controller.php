@@ -53,7 +53,7 @@ class Cc3Controller extends Zend_Controller_Action
     public function editAction()
     {
 	    $this->logger->info( '-> Cc3Controller->editAction()');
-		
+		$mod = new Default_Model_CC3();
 		$this->view->message = '';
 		
 		$request = $this->getRequest();
@@ -61,8 +61,13 @@ class Cc3Controller extends Zend_Controller_Action
 		$cc2 = $request->getParam('cc2');
 		$cc3 = $request->getParam('cc3');
 	    $userDef = $request->getParam('userdef');
-		$perssubval = $request->getParam('perssubval');
+		//$perssubval = $request->getParam('perssubval');
 		$val = $request->getParam('val');
+		
+		$maxUserVal = $request->getParam('maxuserval');
+	    $resetAllowed = $request->getParam('resetallowed');
+		$defVal = $request->getParam('defval');		
+		
 		$this->logger->debug( 'request\n' . var_export($_REQUEST,true));
         
 		if ($this->_request->isPost()) {
@@ -74,12 +79,16 @@ class Cc3Controller extends Zend_Controller_Action
 			} elseif (!empty($save)) {
 			   $val = $request->getParam('newval');	
 			    $msg = wk_check_number($val);
+				if (!isset($msg)) {			
+                   $maxVal = wk_to_float($maxUserVal);
+				   $userVal = wk_to_float($val);
+				   if ( !(0 <= $userVal and $userVal <= $maxVal)) {
+                      $msg = 'Neuer PVPI-Wert liegt nicht im gültigen Wertebereich!';
+				   }
+				}			
 			    if (isset($msg)) {
-			        //$data = array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'userdef' => $userDef, 'perssubval' => $perssubval );
-			        //$this->view->entries = $data;
 			        $this->view->message = $msg;
 		        } else { // insert or update		 		 
-			        $mod = new Default_Model_CC3();
                     $data = $mod->insertOrUpdate($val,$this->userId,$cc1,$cc2, $cc3);
 		            $this->_redirect("cc3/index/cc1/$cc1/cc2/$cc2");
 		       }
@@ -88,15 +97,31 @@ class Cc3Controller extends Zend_Controller_Action
               $data = $mod->delete($this->userId,$cc1,$cc2,$cc3);
 		      $this->_redirect("cc3/index/cc1/$cc1/cc2/$cc2");
 		   }
-		} else {
-            $mod = new Default_Model_CC3();
-			$perssubval = $mod->hasPersSubValues($this->userId,$cc1,$cc2,$cc3);				
-		    //$data = array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'userdef' => $userDef, 'perssubval' => $perssubval );
-		    //$this->view->entries = $data;		
+		} else { // Kommentare zur Berechnung von maxUserVal siehe Cc1Controller
+	        $mod_cc1 = new Default_Model_CC1();
+            $id99val =  $mod_cc1->getId99Value($this->userId);
+			$this->logger->debug( "id99val =  $id99val ");
+			
+			$deltaVal = '0'; // $mod->getDeltaSubVal($this->userId, $cc1,$cc2,$cc3);
+			$this->logger->debug( "deltaVal =  $deltaVal ");
+			
+            $maxUserVal = wk_calc_max_user_val($val,$id99val,$deltaVal);
+			$def_val = wk_to_float($defVal);
+			$this->logger->debug( "def_val =  $def_val ");	
+			$maxVal = wk_to_float($maxUserVal);
+			$this->logger->debug( "maxVal =  $maxVal ");
+			
+			 if (0 <= $def_val and $def_val <= $maxVal) {
+			    $resetAllowed = '1';
+			 } else { $resetAllowed = '0';}
+			 
+            $this->logger->debug( "maxVal: type  =  $maxValType  val =  $maxUserVal");			
 		} 
 		$this->view->title = "PVPI-Wert ändern";
+		$perssubval = $mod->hasPersSubValues($this->userId,$cc1,$cc2,$cc3);		
 		$this->view->entries =
 		     array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'userdef' => $userDef, 'DATA' => $perssubval, 'val' => $val,
+			        'maxuserval' => $maxUserVal, 'defval' => $defVal, 'resetallowed' => $resetAllowed,
 			       'ONLOAD' => 'javascript: this.document.editform.newval.focus();');
         $this->render();
 		$this->logger->info( '<- Cc3Controller->editAction()');

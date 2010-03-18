@@ -9,10 +9,11 @@ const WK_TXT_WAREN = 'Waren';
 // Konstanten füt Column user_def
 const WK_VAL_DEFAULT = '0'; // Default Wert
 const WK_VAL_USER = '1'; // Benutzerdefinierter Wert
+const WK_VAL_USER_SUB = '7'; // Benutzerdefinierte Werte in unteren Ebenen
 const WK_VAL_DIFF_ROW = '8'; // Dummy Row Sonstiges cc1 id = 99
 const WK_VAL_NOT_EDITABLE = '9'; // Wert nicht  editierbar
 
-function wk_number_format($strVal, $scale = 4)
+function wk_number_format($strVal, $scale = 2)
 { 
   $num_digits = $scale + 2;
   $fstr = '%'.$num_digits . '.' . $scale . 'F';
@@ -36,10 +37,33 @@ function wk_check_number($number, $min = 0, $max = 100)
    if ( !is_numeric($num)) {
        return "Bitte eine Zahl eingeben";
    }
+   /*
    if ( !($min <= $num and $num <= $max)) {
       return "Bitte eine Zahl im Bereich von $min bis $max  eingeben";
-   }
+   } */
    return null;
 }
 
+function wk_to_float($strVal)
+{
+   $floatVal = (float)str_replace(',','.',$strVal);
+   return $floatVal;
+}
+
+function wk_calc_max_user_val($strOldVal,$stId99Val,$deltaSubVal)
+{
+   $logger = Zend_Registry::get('logger');
+   $logger->debug("-> wk_calc_max_user_val(strOldVal=$strOldVal,stId99Val=$stId99Val,deltaSubVal = $deltaSubVal)");
+   $maxVal = wk_to_float($strOldVal);
+   $id99Val = wk_to_float($stId99Val);
+   if ( $id99Val >= 0 ) {
+      $oldVal = wk_to_float($strOldVal);
+	  $deltaVal = wk_to_float($deltaSubVal);
+      //$maxVal = $oldVal + $id99Val - $deltaVal;
+	  $maxVal = $oldVal + $id99Val;
+   }
+   $logger->debug("<- wk_calc_max_user_val() maxVal = $maxVal");
+   //return sprintf('%F',$maxVal);
+   return wk_number_format(sprintf('%F',$maxVal),4);
+}
 ?>

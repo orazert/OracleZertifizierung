@@ -52,7 +52,7 @@ class WarenController extends Zend_Controller_Action
     public function editAction()
     {
 	    $this->logger->info( '-> WarenController->editAction()');
-		
+		$mod = new Default_Model_Waren();
 		$this->view->message = '';
 		
 		$request = $this->getRequest();
@@ -63,6 +63,7 @@ class WarenController extends Zend_Controller_Action
 		$warencode = $request->getParam('warencode');
 	    $userDef = $request->getParam('userdef');
 		$val = $request->getParam('val');
+		$maxUserVal = $request->getParam('maxuserval');
 		
 		$this->logger->debug( 'request\n' . var_export($_REQUEST,true));
         
@@ -74,26 +75,45 @@ class WarenController extends Zend_Controller_Action
 			   $this->_redirect("waren/index/cc1/$cc1/cc2/$cc2/cc3/$cc3");
 			} elseif (!empty($save)) {
 			   $val = $request->getParam('newval');	
-               $msg = wk_check_number($val);				   
+               $msg = wk_check_number($val);
+               if (!isset($msg)) {			
+                   $maxVal = wk_to_float($maxUserVal);
+				   $userVal = wk_to_float($val);
+				   if ( !(0 <= $userVal and $userVal <= $maxVal)) {
+                      $msg = 'Neuer PVPI-Wert liegt nicht im gültigen Wertebereich!';
+				   }
+				}			 			   
 			    if (isset($msg)) {
 			        $this->view->message = $msg;
 		        } else { // insert or update		 		 
-			        $mod = new Default_Model_Waren();
 					$data = $mod->insertOrUpdate_1($val,$this->userId,$id);
 		            $this->_redirect("waren/index/cc1/$cc1/cc2/$cc2/cc3/$cc3");
 		       }
 		   } elseif (!empty($reset)) { //reset to default value
-		      $mod = new Default_Model_Waren();
 			  $data = $mod->delete_1($this->userId,$id);
 		      $this->_redirect("waren/index/cc1/$cc1/cc2/$cc2/cc3/$cc3");
 		   }
-		} else {	
-		    //$data = array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'id' => $id, 'warencode' => $warencode, 'userdef' => $userDef );
-		    //$this->view->entries = $data;		
+		} else { // Kommentare zur Berechnung von maxUserVal siehe Cc1Controller	
+	        $mod_cc1 = new Default_Model_CC1();
+            $id99val =  $mod_cc1->getId99Value($this->userId);
+			$this->logger->debug( "id99val =  $id99val ");
+			$deltaVal = '0';
+            $maxUserVal = wk_calc_max_user_val($val,$id99val,$deltaVal);
+			$def_val = wk_to_float($defVal);
+			$this->logger->debug( "def_val =  $def_val ");	
+			$maxVal = wk_to_float($maxUserVal);
+			$this->logger->debug( "maxVal =  $maxVal ");
+			
+			 if (0 <= $def_val and $def_val <= $maxVal) {
+			    $resetAllowed = '1';
+			 } else { $resetAllowed = '0';}
+			 
+            $this->logger->debug( "maxVal: type  =  $maxValType  val =  $maxUserVal");			
 		} 
 		$this->view->title = "PVPI-Wert ändern";
 		$this->view->entries = 
 		    array('cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 'id' => $id, 'warencode' => $warencode, 'userdef' => $userDef, 'val' => $val,
+			      'maxuserval' => $maxUserVal, 'defval' => $defVal, 'resetallowed' => $resetAllowed,
 			      'ONLOAD' => 'javascript: this.document.editform.newval.focus();');
         $this->render();
 		$this->logger->info( '<- WarenController->editAction()');

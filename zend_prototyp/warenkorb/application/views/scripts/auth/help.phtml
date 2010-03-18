@@ -1,12 +1,20 @@
 <div class="divcenter">
-<P ><FONT size=5 ><B>Persönlicher Warenkorb </B></FONT></P>
-<P align="left"><FONT size=3>Mit diesem Programm kann man ermitteln, zu welchem 
-Prozentsatz der eigene Haushalt von der Inflation betroffen ist. Dazu werden aus 
-646 Gütern und Dienstleistungen des täglichen Bedarfs, jene ausgewählt, welche 
-sich im eigenen Warenkorb befinden, sowie deren prozentueller Anteil.
-</FONT></P>
-<P><FONT size=3> 1.)Warenbereiche 
-(CC1)&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp; (Anzahl 12)</FONT></P>
+<P ><FONT size=5 ><B>Verbraucherpreisindex, Warenkorb</B></FONT></P>
+<P align="left">Der Lebenshaltungskostenindex oder Verbraucherpreisindex(VPI) misst die Veränderung des Geldwertes anhand der Preise der für die Lebenshaltung wichtigen Güter und Dienstleistungen (Lebenshaltungskosten). Ausgangspunkt ist der so genannte Warenkorb, der eine große Anzahl (z.Zt. 780) von Gütern und Dienstleistungen des typischen Verbrauchs enthält.
+
+Ausgehend vom einem Basisjahr, dessen Preise gleich 100 % gesetzt werden, ermittelt man die prozentuale Veränderung der Preise (und damit auch die Veränderung der Kaufkraft) im Vergleich mit dem Basisjahr für einzelne Warengruppen (z. B. Nahrungs- und Genussmittel, Kleidung, Miete) und für die Lebenshaltung insgesamt. Preisveränderungen werden auch im Vergleich zum Vorjahr ermittelt.
+<p>
+Unter einem sogenannten repräsentativen Warenkorb versteht man auf dem Gebiet der Wirtschaftswissenschaften die Zusammenstellung einer möglichst repräsentativen Anzahl verschiedener Güter zur Ermittlung des Preisindex und der Inflation. Die Preisentwicklung der enthaltenen Güter wird dabei über eine bestimmte Zeit (z. B. vier Jahre) mit konstanter Gewichtung der einzelnen Positionen ermittelt.
+<p>
+Üblicherweise versteht man unter dem Warenkorb den, der für die Berechnung des Verbraucherpreisindex (VPI) verwendet wird. Dieser berücksichtigt die anteiligen Ausgaben der privaten Haushalte für die entsprechenden Güterkategorien.
+<p>
+In Österreich wird der Warenkorb für den Verbraucherpreisindex von der Statistik Austria erstellt. Von 1966 bis 1996 wurde der Warenkorb alle zehn Jahre aktualisiert (VPI 66 bis VPI 96). Aufgrund von Vorgaben von Eurostat findet die Anpassung des Warenkorbes nun alle fünf Jahre statt. Aktuell ist der VPI 2005, die nächste Aktualisierung wird im Jahr 2010 stattfinden, die neue Indexreihe ab Januar 2011 veröffentlicht. Der Warenkorb umfasst unter anderem Getreideprodukte, Fleischwaren, Fisch, Milch, Käse, Eier, Fette, Öle, Obst und Gemüse einschließlich Kartoffeln.
+<p>
+Der harmonisierte Verbraucherpreisindex (HVPI) ist ein in der Europäischen Union erhobener Verbraucherpreisindex, dem ein EU-weit einheitlicher Warenkorb zugrunde liegt. Der HVPI ist die Kennzahl, mit der in der Europäischen Wirtschafts- und Währungsunion (EWWU) die Preisniveauentwicklung gemessen wird. 
+
+<P ><FONT size=5 ><B>Warenkorb</B></FONT></P>
+<p>Das aktuelle Programm ermöglicht die Ermittlung der Relevanz der Inflation für den persönlichen Warenkorb. Dazu werden aus 646 Gütern und Dienstleistungen des täglichen Bedarfs, jene ausgewählt, welche sich im persönlichen Warenkorb befinden, sowie deren prozentueller Anteil am Gesamtbudget.
+<P><FONT size=3> 1.)Warenbereiche (Abteilungen)(CC1)&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp; (Anzahl 12)</FONT></P>
 
 <TABLE border="1" align="center" >
   <TBODY>
@@ -115,21 +123,26 @@ Gliederungen, genannt Warenarten (CC2).&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
                 <TD class="tdleft"><FONT size=3>Fernheizung, Arbeitspreis</FONT></TD>
                 </TR></TBODY></TABLE><BR></TD></TR>
 				
-<P><FONT size=3>
-         Es 
-            kann nun der eigene Warenkorb eingegeben werden und zwar auf jeder 
-            Ebene der 4 Untergliederungsarten.&nbsp; Für jede Ware oder Gruppe kann der 
-            prozentuelle Anteil am Gesamtwarenkorb eingegeben werden.
-			
-			
-            Um widersprüchliche  Eingaben auf verschiedenen Ebenen zu vermeiden, 
-			zB. Den Prozentsatz 
-            einer Warenart, welche schon in einer eingegebenen Warengruppe 
-            enthalten ist, verhindert das Programm, daß Eingaben auf einer 
-            niedrigeren Gliederungsebene gemacht werden können.</FONT> 
+<p>
+Der Warenkorb kann auf jeder der vier Ebene, den prsönliche Ausgaben angepasst werden.   
+Die Eingabe des persönlichen VPI Wertes (PVPI) erfolgt durch die
+Angabe des prozentuelle Anteil einer einzelnen Ware, einer Warengruppe, einer Warenart oder eines Warenbereiches
+am Gesamtwarenkorb.</p><p>
+ Um doppelte Eingaben auf verschiedenen Ebenen zu vermeiden, 
+ zB. Den Prozentsatz einer Warengruppe, welche schon in einer eingegebenen Warenart enthalten ist, 
+ verhindert das Programm, dass Eingaben auf einer unteren Gliederungsebene gemacht werden können, 
+ sobald auf einer übergeordneten Ebene bereits eine Eingabe erfolgt ist. 
+</p>
+<p>
+Beispiel: Hat man für eine bestimmte Gruppe (zB. Wärmeenergie) bereits einen Anteil am Warenkorb eingegeben,
+so kann für die einzelnen Waren dieser Gruppe (Fernheizung Grundgebühr und Fernheizung Arbeitspreis) keine Werte mehr eingeben.
 
-<?php
-$url = $this->url(array('controller'=>'auth','action' => 'index'), 'default', true);
-print '<div align="center"><a href="' . $url . '" >Zurück zu Home</a></div>';	
-?>		
+</p>
+<p>
+Die Summe der prozentuellen Anteile der einzelnen Waren/Warenkategorien darf 100% nicht übersteigen,
+der Anteil darf aber weniger als 100% sein. 
+Die Differenz zu 100% wird in der Zeile Sonstiges (Ebene Warenbereiche) angezeigt.
+</p>
+
+
 </div>

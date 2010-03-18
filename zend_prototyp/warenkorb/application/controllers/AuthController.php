@@ -43,6 +43,8 @@ class AuthController extends Zend_Controller_Action
         $logger = Zend_Registry::get('logger');
 	    $logger->info( '-> AuthController->loginAction()');
 		
+
+
 		$this->view->message = '';
 	    
         if ($this->_request->isPost()) {

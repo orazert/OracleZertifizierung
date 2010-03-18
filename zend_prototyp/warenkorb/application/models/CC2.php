@@ -76,6 +76,17 @@ class Default_Model_CC2
 	  $this->logger->info( '-> Default_Model_CC2->hasPersSubValues()'); 
 	  return $result;
 	} // hasPersSubValues
-	
+		
+	public function getDeltaSubVal($userId,$cc1,$cc2)
+	{
+	  $this->logger->info( "-> Default_Model_CC2->getDeltaSubVal() - userId = $userId");
+	  $sql = "select nvl(sum(ist_vpi-def_val),0) deltaval from table($this->pkg.has_pers_val_cc2(p_userid => $userId, p_cc1 => $cc1, p_cc2 => $cc2))";
+	  $this->logger->debug( ' sql =  ' . $sql);
+	  $result = $this->db->fetchAll($sql);
+	  $deltaVal = $result[0]['DELTAVAL'];
+	  $this->logger->debug( " deltaval =  $deltaVal");
+	  $this->logger->info('<- Default_Model_CC2->getDeltaSubVal()()');
+	  return $deltaVal;
+	} // getDeltaSubVal
 	
 }

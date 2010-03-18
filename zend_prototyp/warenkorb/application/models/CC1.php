@@ -95,5 +95,27 @@ class Default_Model_CC1
 		return result;
 	} //  deleteFromWKPers
 	
+	public function getId99Value($userId)
+	{
+	   $this->logger->info( "-> Default_Model_CC1->getId99Value() - userId = $userId");
+	   $sql = "select val from table($this->pkg.fetch_cc1(p_userid => $userId)) where cc1 = 99" ;
+	   $this->logger->debug( ' sql =  ' . $sql);
+	   $result = $this->db->fetchAll($sql);
+	   //$this->logger->debug( ' result ' . var_export($result,true));
+	   $id99Value = $result[0]['VAL'];
+	   $this->logger->info('<- Default_Model_CC1->getId99Value()');
+	   return  $id99Value;
+	}
 	
+	public function getDeltaSubVal($userId,$cc1)
+	{
+	  $this->logger->info( "-> Default_Model_CC1->getDeltaSubVal() - userId = $userId");
+	  $sql = "select nvl(sum(ist_vpi-def_val),0) deltaval from table($this->pkg.has_pers_val_cc1(p_userid => $userId, p_cc1 => $cc1))";
+	  $this->logger->debug( ' sql =  ' . $sql);
+	  $result = $this->db->fetchAll($sql);
+	  $deltaVal = $result[0]['DELTAVAL'];
+	  $this->logger->debug( " deltaval =  $deltaVal");
+	  $this->logger->info('<- Default_Model_CC1->getDeltaSubVal()()');
+	  return $deltaVal;
+	} // getDeltaSubVal
 }

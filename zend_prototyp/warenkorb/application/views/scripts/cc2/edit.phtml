@@ -1,5 +1,6 @@
 <div class="divcenter">
 <h2><?php echo $this->escape($this->title); ?></h2>
+<h4>Gültiger Wertebreich: 0 bis <?php echo $this->entries['maxuserval'] ?><h4>
 
 <?php if(!empty($this->message)) :?>
 <div id="message">
@@ -18,12 +19,14 @@
 	<input type="hidden" name="cc1" value="<?php echo $this->entries['cc1'] ?>"  />
 	<input type="hidden" name="cc2" value="<?php echo $this->entries['cc2'] ?>"  />
 	<input type="hidden" name="userdef" value="<?php echo $this->entries['userdef'] ?>"  />
-	<input type="hidden" name="perssubval" value="<?php echo $this->entries['perssubval'] ?>"  />
+	<input type="hidden" name="maxuserval" value="<?php echo $this->entries['maxuserval'] ?>"  />
+	<input type="hidden" name="defval" value="<?php echo $this->entries['defval'] ?>"  />
+	<input type="hidden" name="resetallowed" value="<?php echo $this->entries['resetallowed'] ?>"  />
 </div>
 <br>
 <div id="formbutton">
 <input type="submit" name="save" value="Speichern" />
-<?php if ($this->entries['userdef'] > 0) : ?>
+<?php if ($this->entries['userdef'] === WK_VAL_USER and $this->entries['resetallowed'] > 0) : ?>
 <input type="submit" name="reset" value="Rücksetzen" />
 <?php endif ?>
 <input type="submit" name="cancel" value="Abbrechen" />
@@ -51,10 +54,10 @@
 		$pvpi = $entry['IST_VPI'];
 		$pvpi = wk_number_format($pvpi);
 		print '<tr>';
-		print '<td>' . $this->escape($cc1) . '</td>';
-		print '<td>' . $this->escape($cc2) . '</td>';
-		print '<td>' . $this->escape($cc3) . '</td>';
-		print '<td>' . $this->escape($warencode) . '</td>';
+		print '<td>' . $this->escape($cc1) . '&nbsp;</td>';
+		print '<td>' . $this->escape($cc2) . '&nbsp;</td>';
+		print '<td>' . $this->escape($cc3) . '&nbsp;</td>';
+		print '<td>' . $this->escape($warencode) . '&nbsp;</td>';
 		print  '<td>' . $this->escape($bezeichnung) . '</td>'; 
 		print '<td align ="right">' . $this->escape(wk_number_format($pvpi)) . '</td>';
 	    print '</tr>';

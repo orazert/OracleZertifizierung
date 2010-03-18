@@ -14,12 +14,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
        $logger->addWriter($writer);
 	   $filter = new Zend_Log_Filter_Priority((int)$config->logger->priority);
        $logger->addFilter($filter);
+       
 	   Zend_Registry::set('logger', $logger);
 	   $logger->info('****************************************************************************************');
        $logger->info('--> Zend_Application_Bootstrap_Bootstrap->_initAutoload()');
        
 		$options = array(
-          Zend_Db::CASE_FOLDING => Zend_Db::CASE_UPPER,
+          Zend_Db::CASE_FOLDING => Zend_Db::CASE_LOWER,
           Zend_Db::AUTO_QUOTE_IDENTIFIERS => false,
         );
         
@@ -41,6 +42,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $db = Zend_Db::factory('oracle', $params);
         Zend_Db_Table_Abstract::setDefaultAdapter($db);
 		Zend_Registry::set('db', $db);
+
+$opts = new Zend_Console_Getopt('abp:');
+$opts->setOption('ignoreCase', true);
          
 		// correlation
 		$corrFct = $config->corr->fct;

@@ -1,6 +1,6 @@
 <div class="divcenter">
 <h2><?php echo $this->escape($this->title); ?></h2>
-
+<h4>Gültiger Wertebreich: 0 bis <?php echo $this->entries['maxuserval'] ?><h4>
 <?php if(!empty($this->message)) :?>
 <div id="message">
 <?php echo "<font color='red'>" . $this->escape($this->message) . "</font>";?>
@@ -21,11 +21,14 @@
 	<input type="hidden" name="id" value="<?php echo $this->entries['id'] ?>"  />
 	<input type="hidden" name="warencode" value="<?php echo $this->entries['warencode'] ?>"  />
 	<input type="hidden" name="userdef" value="<?php echo $this->entries['userdef'] ?>"  />
+	<input type="hidden" name="maxuserval" value="<?php echo $this->entries['maxuserval'] ?>"  />
+	<input type="hidden" name="defval" value="<?php echo $this->entries['defval'] ?>"  />
+	<input type="hidden" name="resetallowed" value="<?php echo $this->entries['resetallowed'] ?>"  />
 </div>
 <br>
 <div id="formbutton">
 <input type="submit" name="save" value="Speichern" />
-<?php if ($this->entries['userdef'] > 0) : ?>
+<?php if ($this->entries['userdef'] === WK_VAL_USER and $this->entries['resetallowed'] > 0) : ?>
 <input type="submit" name="reset" value="Rücksetzen" />
 <?php endif ?>
 <input type="submit" name="cancel" value="Abbrechen" />

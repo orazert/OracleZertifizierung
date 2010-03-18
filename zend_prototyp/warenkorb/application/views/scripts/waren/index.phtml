@@ -15,11 +15,22 @@
 	 print '<a href="' . $url4 . '">' . WK_TXT_WAREN . '</a> ]</h3>';
 	  
 	 $corr = $this->entries['CORR'];
-	 print '<h3>Korrelation: ' . $this->escape(wk_number_format($corr,2)) . '%</h3>';
+	 print '<h3>Relevanz: ' . $this->escape(wk_number_format($corr,0)) . '%</h3>';
 	  
 	 $data = $this->entries['DATA'];
 	  print '<table border="1" align="center">';
-	  print '<tr><th>CC1</th><th>CC2</th><th>CC3</th><th>WCode</th><th>Bezeichnung</th><th>VPI</th><th>PVPI</th></tr>';
+	  print '<tr>
+	  <th>CC1</th> 
+	  <th>CC2</th><th>CC3</th>
+	  <th>
+	  		<DIV style="Z-INDEX: 1;  VISIBILITY: visible; WIDTH: 60px; HEIGHT: 20px; " 
+						onmouseover=doMouseover(wcode) onmouseout=doMouseout() align=center>WCode
+    				<div id=wcode class="divfloat1">    
+     					Waren-Nummer
+    				</div>
+  			</DIV>
+	 	</th>
+	 	<th>Bezeichnung</th><th>VPI</th><th>PVPI</th></tr>';
 	  foreach ($data as $entry) {
 	    $cc1 = $entry['CC1'];
 		$cc2 = $entry['CC2'];
@@ -29,7 +40,7 @@
 		$vpi = $entry['WC_VPI'];
 		$db_val = $entry['VAL'];
 		$val = wk_number_format($db_val,2);
-		$db_val = wk_number_format($db_val);
+		$db_val = wk_number_format($db_val,4);
 		$userDef = $entry['USER_DEF'];
 		$id = $entry['WC_ID'];
 		print '<tr>';
@@ -40,13 +51,13 @@
 		print  '<td class="tdleft">' . $this->escape($bezeichnung) . '</td>'; 
 		print '<td align ="right">' . $this->escape(wk_number_format($vpi)) . '</td>';
 		$url = $this->url(array('controller'=>'waren','action' => 'edit', 'cc1' => $cc1, 'cc2' => $cc2, 'cc3' => $cc3, 
-		       'id' => $id, 'warencode' => $warencode, 'userdef' => $userDef, 'val' => $db_val), 'default', true);
+		       'id' => $id, 'warencode' => $warencode, 'userdef' => $userDef, 'val' => $db_val, 'defval' => $vpi), 'default', true);
 		if ($userDef === WK_VAL_USER) {
 		     print  '<td align ="right"><a href="' . $url . '"><font color="blue"><b>' . $this->escape($val) .'</b></font></a></td>'; 
 	    } elseif ($userDef === WK_VAL_DEFAULT) {
-              print  '<td align ="right"><a href="' . $url . '"><font color="black">' . $this->escape($val) .'</font></a></td>'; 
+              print  '<td align ="right"><a href="' . $url . '">' . $this->escape($val) .'</a></td>'; 
 	    } elseif ($userDef === WK_VAL_NOT_EDITABLE) {
-		     print  '<td align ="right"><b>' . $this->escape($val) . '</b></td>'; 	
+		     print  '<td align ="right"><font color="green"><b>' . $this->escape($val) . '</b></font></td>'; 	
 		} 
 	    print '</tr>';
 	  }

@@ -1,22 +1,60 @@
     <?php 
 	 require_once ( APPLICATION_PATH . '\wk_util\wk_util.php');
-	 //aaaaa
+	   
+	               
 	 $url1 = $this->url(array('controller'=>'cc1','action' => 'index'), 'default', true);
 	 print '<div class="divcenter">';
 	 print '<h2>Persönlicher Warenkorb </h2>';
 	 print '<h3 >[<a href="' . $url1 . '">'. WK_TXT_CC1 . '</a>]</h3>';
 	 $corr = $this->entries['CORR'];
-	 print '<h3>Korrelation: ' . $this->escape(wk_number_format($corr,2)) . '% </h3>';
+	 print '<h3>Relevanz: ' . $this->escape(wk_number_format($corr,0)) . '% </h3>';
 	 print '<table border="1" align="center">';
-	 print '<tr><th>CC1</th><th>Bezeichnung</th><th>VPI</th><th>PVPI</th></tr>';
+	 print '<tr>
+	 <th>
+	  	 	<DIV style="Z-INDEX: 1; border:0px solid;  VISIBILITY: visible; WIDTH: 35px; HEIGHT: 20px; " 
+		onmouseover=doMouseover(cc1) onmouseout=doMouseout() align=center>CC1
+    <div id=cc1 class="divfloat1">    
+     Warenbereichs-Nummer
+    </div>
+  </DIV>
+	 </th>
+	 
+	 <th>
+	 	 	<DIV style="Z-INDEX: 1; border:0px solid;  VISIBILITY: visible; WIDTH: 550px; HEIGHT: 20px; " 
+		onmouseover=doMouseover(bezeichnung) onmouseout=doMouseout() align=center>Bezeichnung
+    <div id=bezeichnung class="divfloat1">    
+     Bezeichnung der Waren oder Warengruppen
+    </div>
+  </DIV>
+	 </th>
+	 
+	 <th>
+	 	<DIV style="Z-INDEX: 1; border:0px;  VISIBILITY: visible; WIDTH: 50px; HEIGHT: 20px; " 
+		onmouseover=doMouseover(vpi) onmouseout=doMouseout() align=center>VPI
+    <div id=vpi class="divfloat1">    
+     Verbraucherpreisindex (Statistik Austria)
+    </div>
+  </DIV>
+	 </th>
+	 
+	 <th> 
+	<DIV style="Z-INDEX: 1; border:0px;  VISIBILITY: visible; WIDTH: 50px; HEIGHT: 20px; " 
+		onmouseover=doMouseover(pvpi) onmouseout=doMouseout() align=center>PVPI
+    <div id=pvpi class="divfloat1">    
+     Persönlicher Verbraucherpreisindex
+    </div>
+  </DIV>
+	</th></tr>';
+
 	 $data = $this->entries['DATA'];
+	 
 	 foreach ($data as $entry) {
 	    $cc1 = $entry['CC1'];
 		$bezeichnung = $entry['CC1_BEZEICHNUNG'];
 		$vpi = $entry['CC1_VPI'];
 		$db_val = $entry['VAL'];
 		$val = wk_number_format($db_val,2);
-		$db_val = wk_number_format($db_val);
+		$db_val = wk_number_format($db_val,4);
 		$userDef = $entry['USER_DEF'];
 		$url = $this->url(array('controller'=>'cc2','action' => 'index', 'cc1' => $cc1), 'default', true);
 	    print '<tr>';
@@ -26,9 +64,15 @@
 		   print '<td>' . $this->escape($cc1) . '</td>';
 		}
 		if ($userDef === WK_VAL_DIFF_ROW) {
-		    print  '<td class="tdleft">' . $this->escape($bezeichnung) . '</td>'; 
+		    print  '<td class="tdleft"> 
+		        	<DIV style="Z-INDEX: 1; border:0px;  VISIBILITY: visible; WIDTH: 50px; HEIGHT: 20px; " 
+							onmouseover=doMouseover(sonstiges) onmouseout=doMouseout() align=center><font color="red">' . $this->escape($bezeichnung) . 
+    	'</font><div id=sonstiges class="divfloat2">    
+     		Alle anderen, die nicht zu oben genannten Warenbereichen gehören
+    	</div>
+  		</DIV></td>'; 
 		} else {
-		    print  '<td class="tdleft"><a href="' . $url .     '" >' . $this->escape($bezeichnung) .'</a>' . '</td>'; 
+		    print  '<td class="tdleft"><a href="' . $url .  '" >' . $this->escape($bezeichnung) .'</a></td>'; 
 		}
 		if ($userDef === WK_VAL_DIFF_ROW) {
 		    print '<td align ="right" >' . $this->escape(wk_number_format($vpi)) . '</td>';
@@ -36,21 +80,37 @@
 		    print '<td align ="right">' . $this->escape(wk_number_format($vpi)) . '</td>';
 		}
 		$url = $this->url(array('controller'=>'cc1','action' => 'edit', 'cc1' => $cc1, 
-		                  'userdef' => $userDef, 'val' => $db_val), 'default', true);
+		                  'userdef' => $userDef, 'val' => $db_val,'defval' => $vpi), 'default', true);
 		if ($userDef === WK_VAL_USER) {
 		     print  '<td align ="right" ><a href="' . $url . '"><font color="blue"><b>' . $this->escape($val) .'</b></font></a></td>'; 
 	    } elseif ( $userDef === WK_VAL_DEFAULT ) {
 			 print  '<td align ="right" ><a href="' . $url . '">' . $this->escape($val) .'</a></td>'; 
+	    } elseif ( $userDef === WK_VAL_USER_SUB ) {
+			 print  '<td align ="right"><a href="' . $url . '"><font color="darkorange"><b>' . $this->escape($val) .'</b></font></a></td>'; 
 		} elseif ($userDef === WK_VAL_NOT_EDITABLE) {
-		     print  '<td align ="right"><b>' . $this->escape($val) . '</b></td>'; 
+		     print  '<td align ="right"><font color="green"><b>' . $this->escape($val) . '</b></font></td>'; 
 	    } elseif ($userDef === WK_VAL_DIFF_ROW) {
 		     print  '<td align ="right"><font color="red"><b>' . $this->escape($val) . '</b></font></td>'; 
         }
 	    print '</tr>';
 	  }
 	  print '</table>';
+	   print '<table border="0" align="center">
+	   			<tr>
+	   				<td class="tdsmall"><img src="' . $this->baseUrl() . '/img/blue.jpg">benutzerdefinierter PVPI-Wert</td>
+	   				<td class="tdsmall"><img src="' . $this->baseUrl() . '/img/orange.jpg">benutzerdefinierter PVPI-Werte in Untergruppe</td>
+	   			</tr>
+	   			<tr>
+	   				<td class="tdsmall"><img src="' . $this->baseUrl() . '/img/red.jpg">sonstiges</td>
+	   				<td class="tdsmall"><img src="' . $this->baseUrl() . '/img/green.jpg">benutzerdefinierter PVPI-Werte in Obergruppe</td>
+	   			</tr>
+	   			</table>
+	   ';
+	   
 	  print '<br>';
 	  $url2 = $this->url(array('controller'=>'cc1','action' => 'display'), 'default', true);
-	  print 'Alle Gruppen und Waren mit geänderten PVPI Werten anzeigen, <a href="' . $url2 . '" style="color:blue; font-weight:bold;">hier klicken</a>';
+	  print '<a href="' . $url2 . '">Alle Gruppen und Waren mit geänderten PVPI Werten anzeigen</a>';
 		print '</div>';
+		
+	
 	?>

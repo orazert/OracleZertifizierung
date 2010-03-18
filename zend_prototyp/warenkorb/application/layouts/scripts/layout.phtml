@@ -1,6 +1,6 @@
 <?php 
 // application/layouts/scripts/layout.phtml
-echo $this->doctype();
+//echo $this->doctype();
 $auth = Zend_Auth::getInstance();
 $isLoggedIn  = $auth->hasIdentity();
 $userName = $auth->getIdentity()->USER_NAME;
@@ -10,22 +10,25 @@ $userName = $auth->getIdentity()->USER_NAME;
   <meta http-equiv="Content-Type" content="text/html " /> 
   <title>Zend Framework Warenkorb Application</title>
   
-  <!--<?php echo $this->headLink()->appendStylesheet('/css/global.css') ?>-->
-  <!--<?php echo $this->headLink()->appendStylesheet(APPLICATION_PATH . '\layouts\warenkorb.css') ?>-->
-	<style type="text/css">
-          body { background-color:#CCFFFF; font-family:Arial,sans-serif; color:#2f4f4f;}
-          p {text-align:left; color:#3333300;}
-          h3 {color:#FE2E2E;}
-          
-          a:link { text-decoration:none;  color:#2f4f4f;}
-          a:visited { text-decoration:none; color:#2f4f4f;}
-          a:hover { text-decoration:underline; background-color:yellow;}
-          a:active { text-decoration:underline; }
-          
-          td.tdleft {text-align:left; font-weight:bold;}
-          div.divcenter {text-align:center; padding:10px; border:thin solid red; margin:25px;}
-  </style>
+<?php 
+  	echo $this->headLink()->appendStylesheet($this->baseUrl() .'/css/warenkorb.css') ;
+?> 
+ 
+<SCRIPT language=javascript>
+					var sel;
+	
+					function doMouseout()
+{
+       sel.style.visibility="hidden";
+}
 
+function doMouseover(obj)
+{
+       sel=obj;
+       sel.style.visibility="visible";
+}         
+ </SCRIPT>
+ 
 </head> 
 <?php if (is_array($this->entries) and array_key_exists('ONLOAD',$this->entries)) : ?>
   <body  onload="<?php print $this->entries['ONLOAD'] ?> ">
@@ -61,6 +64,12 @@ $userName = $auth->getIdentity()->USER_NAME;
 </div>
 
 <?php echo $this->layout()->content ?>
+<?php
+$url0 = $this->url(array('controller'=>'auth','action' => 'help'), 'default', true);
+$url = $this->url(array('controller'=>'auth','action' => 'index'), 'default', true);
+print '<div style="background-color: #FFFF66; height: 20px; margin:25px; margin-top:0px; text-align:right;" ><a href="' . $url0 . 
+	'">Anleitung</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="' . $url . '">Home</a></div>';
+?>
 
 </body>
 </html>

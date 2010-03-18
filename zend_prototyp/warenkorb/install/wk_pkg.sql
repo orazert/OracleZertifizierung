@@ -4,6 +4,7 @@ CREATE OR REPLACE package wk_pkg as
 -- (record t_cc1_rec, t_cc2_rec, t_cc3_rec, t_warencode_rec) 
 WK_VAL_DEFAULT      constant number(1) := 0; -- Default Wert
 WK_VAL_USER         constant number(1) := 1; -- Benutzerdefinierter Wert
+WK_VAL_USER_SUB     constant number(1) := 7; -- Benutzerdefinierte Werte in unteren Ebenen
 WK_VAL_DIFF_ROW     constant number(1) := 8; -- Dummy Row 'Sonstiges' (cc1 id = 99)
 WK_VAL_NOT_EDITABLE constant number(1) := 9; -- Wert nicht editierbar
 
@@ -58,6 +59,7 @@ type t_pers_val_rec is record (
                       bez varchar2(100),
                       wp_id number,
                       ist_vpi number,
+                      def_val number,
                       wk_level varchar2(10) );
 
 type t_pers_val_tab is table of t_pers_val_rec;
@@ -120,6 +122,7 @@ return t_cc1_tab pipelined is
    v_faktor number := 1.0;
    v_sum_vpi number := 0.0;
    v_sum_val number := 0;
+   v_user_sub number;
    v_rec t_cc1_rec;
   
 begin
@@ -130,8 +133,9 @@ begin
    if p_calc_val = 1 then
    for i in v_tab.first .. v_tab.last loop
       if v_tab(i).user_def = WK_VAL_DEFAULT then
-        select sum(val) into v_sum_val from table(fetch_cc2(p_userid,v_tab(i).cc1));
+         select sum(val), sum(user_def) into v_sum_val, v_user_sub  from table(fetch_cc2(p_userid,v_tab(i).cc1));
         v_tab(i).val := v_sum_val;
+        if v_user_sub > 0 then v_tab(i).user_def := WK_VAL_USER_SUB; end if;
         v_user_sum := v_user_sum + v_tab(i).val;
       else 
         v_sum := v_sum + v_tab(i).val;
@@ -168,7 +172,8 @@ is
        order by cc2;
        
    v_tab t_cc2_tab;
-   v_sum number;
+   v_sum_val number;
+   v_user_sub number;
    v_factor number;
    
 begin
@@ -187,9 +192,10 @@ begin
   else 
       for i in v_tab.first .. v_tab.last loop
           if v_tab(i).user_def = WK_VAL_DEFAULT then
-              select sum(val) into v_sum 
+               select sum(val), sum(user_def) into v_sum_val, v_user_sub  
               from table(fetch_cc3(p_userid,v_tab(i).cc1,v_tab(i).cc2));
-              v_tab(i).val := v_sum;
+              v_tab(i).val := v_sum_val;
+              if v_user_sub > 0 then v_tab(i).user_def := WK_VAL_USER_SUB; end if;
           end if;
       end loop;
   end if;
@@ -217,7 +223,8 @@ is
       order by cc3;
        
    v_tab t_cc3_tab;
-   v_sum number;
+   v_sum_val number;
+   v_user_sub number;
    v_factor number;
    
 begin
@@ -236,9 +243,10 @@ begin
   else 
       for i in v_tab.first .. v_tab.last loop
           if v_tab(i).user_def = WK_VAL_DEFAULT then
-              select sum(val) into v_sum 
+              select sum(val), sum(user_def) into v_sum_val, v_user_sub  
               from table(fetch_warencode(p_userid,v_tab(i).cc1,v_tab(i).cc2,v_tab(i).cc3));
-              v_tab(i).val := v_sum;
+              v_tab(i).val := v_sum_val;
+              if v_user_sub > 0 then v_tab(i).user_def := WK_VAL_USER_SUB; end if;
           end if;
       end loop;
   end if;
@@ -265,7 +273,6 @@ is
       order by warencode;
       
    v_tab t_warencode_tab;
-   v_sum number;
    v_factor number;
    
 begin
@@ -609,19 +616,19 @@ function has_pers_val(p_userid in number)
 return t_pers_val_tab pipelined
 is
   cursor c_cur is
-    select cc1, null cc2, null cc3, null warencode , cc1_bezeichnung bez, wp_id, ist_vpi, 'cc1' wk_level from wk_cc1 t1, wk_personal tp
+    select cc1, null cc2, null cc3, null warencode , cc1_bezeichnung bez, wp_id, ist_vpi, cc1_vpi def_val, 'cc1' wk_level from wk_cc1 t1, wk_personal tp
     where t1.cc1_id = tp.wk_id
           and user_id = p_userid
     union
-    select cc1, cc2, null cc3, null warencode , cc2_bezeichnung bez, wp_id, ist_vpi, 'cc2' wk_level from wk_cc1 t1 , wk_cc2 t2, wk_personal tp
+    select cc1, cc2, null cc3, null warencode , cc2_bezeichnung bez, wp_id, ist_vpi, cc2_vpi def_val, 'cc2' wk_level from wk_cc1 t1 , wk_cc2 t2, wk_personal tp
     where t1.cc1_id = t2.cc1_id and t2.cc2_id = tp.wk_id
           and user_id = p_userid 
     union     
-    select cc1, cc2, cc3, null warencode , cc3_bezeichnung bez, wp_id, ist_vpi, 'cc3' from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_personal tp
+    select cc1, cc2, cc3, null warencode , cc3_bezeichnung bez, wp_id, ist_vpi, cc3_vpi def_val, 'cc3' from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_personal tp
     where t1.cc1_id = t2.cc1_id and t2.cc2_id = t3.cc2_id  and t3.cc3_id = tp.wk_id
           and user_id = p_userid 
     union      
-    select cc1, cc2, cc3, warencode , wc_bezeichnung bez, wp_id, ist_vpi, 'warencode' from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_warencode twc, wk_personal tp
+    select cc1, cc2, cc3, warencode , wc_bezeichnung bez, wp_id, ist_vpi, wc_vpi def_val,'warencode' from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_warencode twc, wk_personal tp
     where t1.cc1_id = t2.cc1_id and t2.cc2_id = t3.cc2_id  and t3.cc3_id = twc.cc3_id and twc.wc_id = tp.wk_id
           and user_id = p_userid
     order by cc1, cc2, cc2, warencode;
@@ -645,15 +652,15 @@ function has_pers_val_cc1(p_userid in number, p_cc1 in number)
 return t_pers_val_tab pipelined
 is
   cursor c_cur is
-    select cc1, cc2, null cc3, null warencode , cc2_bezeichnung bez, wp_id, ist_vpi, 'cc2' wk_level from wk_cc1 t1 , wk_cc2 t2, wk_personal tp
+    select cc1, cc2, null cc3, null warencode , cc2_bezeichnung bez, wp_id, ist_vpi, cc2_vpi def_val,'cc2' wk_level from wk_cc1 t1 , wk_cc2 t2, wk_personal tp
     where t1.cc1_id = t2.cc1_id and t2.cc2_id = tp.wk_id
           and user_id = p_userid and  t1.cc1 = p_cc1 
     union     
-    select cc1, cc2, cc3, null warencode , cc3_bezeichnung bez, wp_id, ist_vpi, 'cc3' from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_personal tp
+    select cc1, cc2, cc3, null warencode , cc3_bezeichnung bez, wp_id, ist_vpi, cc3_vpi def_val, 'cc3' from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_personal tp
     where t1.cc1_id = t2.cc1_id and t2.cc2_id = t3.cc2_id  and t3.cc3_id = tp.wk_id
           and user_id = p_userid and t1.cc1 = p_cc1 
     union      
-    select cc1, cc2, cc3, warencode , wc_bezeichnung bez, wp_id, ist_vpi, 'warencode' from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_warencode twc, wk_personal tp
+    select cc1, cc2, cc3, warencode , wc_bezeichnung bez, wp_id, ist_vpi, wc_vpi def_val, 'warencode' from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_warencode twc, wk_personal tp
     where t1.cc1_id = t2.cc1_id and t2.cc2_id = t3.cc2_id  and t3.cc3_id = twc.cc3_id and twc.wc_id = tp.wk_id
           and user_id = p_userid and  t1.cc1 = p_cc1
     order by cc1, cc2, cc2, warencode;
@@ -677,11 +684,11 @@ function has_pers_val_cc2(p_userid in number, p_cc1 in number, p_cc2 in number)
 return t_pers_val_tab pipelined 
 is
   cursor c_cur is
-    select cc1, cc2, cc3, null warencode , cc3_bezeichnung bez, wp_id, ist_vpi, 'cc3' wk_level from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_personal tp
+    select cc1, cc2, cc3, null warencode , cc3_bezeichnung bez, wp_id, ist_vpi, cc3_vpi def_val, 'cc3' wk_level from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_personal tp
     where t1.cc1_id = t2.cc1_id and t2.cc2_id = t3.cc2_id  and t3.cc3_id = tp.wk_id
           and user_id = p_userid and t1.cc1 = p_cc1 and t2.cc2 = p_cc2
     union      
-    select cc1, cc2, null cc3, warencode , wc_bezeichnung bez, wp_id, ist_vpi, 'warencode' from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_warencode twc, wk_personal tp
+    select cc1, cc2, null cc3, warencode , wc_bezeichnung bez, wp_id, ist_vpi, wc_vpi def_val,'warencode' from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_warencode twc, wk_personal tp
     where t1.cc1_id = t2.cc1_id and t2.cc2_id = t3.cc2_id  and t3.cc3_id = twc.cc3_id and twc.wc_id = tp.wk_id
           and user_id = p_userid and  t1.cc1 = p_cc1 and t2.cc2 = p_cc2
      order by cc1, cc2, cc2, warencode;
@@ -705,7 +712,7 @@ function has_pers_val_cc3(p_userid in number, p_cc1 in number, p_cc2 in number, 
 return t_pers_val_tab pipelined
 is
   cursor c_cur is
-    select cc1, cc2, cc3, warencode , wc_bezeichnung bez, wp_id, ist_vpi, 'warencode' wk_level from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_warencode twc, wk_personal tp
+    select cc1, cc2, cc3, warencode , wc_bezeichnung bez, wp_id, ist_vpi, wc_vpi def_val, 'warencode' wk_level from wk_cc1 t1 , wk_cc2 t2, wk_cc3 t3, wk_warencode twc, wk_personal tp
     where t1.cc1_id = t2.cc1_id and t2.cc2_id = t3.cc2_id  and t3.cc3_id = twc.cc3_id and twc.wc_id = tp.wk_id
           and user_id = p_userid and  t1.cc1 = p_cc1 and t2.cc2 = p_cc2 and t3.cc3 = p_cc3
      order by cc1, cc2, cc2, warencode;

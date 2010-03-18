@@ -1,4 +1,0 @@
-- CC1,CC2,CC3 und Warencodes enthalten die Indizes und Bezeichnungen der einzelnen Waren und Warengruppen.
-- Warengruppierung enthält den Zusammenhang zwischen Waren und Warengruppen.
-- inflationstabelle ist die Tabelle aller Waren und deren Inflationsindex.
-- warenkorb_06 ist der Standardwarenkorb
