@@ -1,0 +1,6 @@
+1)
+warenkorb_dll.sql: change to your path for csv files
+CREATE DIRECTORY rwfiles AS 'd:\xampp\htdocs\OracleZertifizierung\install\datenbank';
+
+2)
+run warenkorb_dll.sql, wk_pkg_dll.sql
